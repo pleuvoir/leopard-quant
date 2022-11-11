@@ -2,6 +2,11 @@
 
 
 
+# 开发环境
+
+设置代理 GOPROXY=https://goproxy.io
+
+
 ## 创建事件
 
 一个事件类型有多个处理器，需要考虑并发的情况。多个处理器使用切片，但是切片的删除好像没有直接的API。此外，type：List[typeHandler]这种 必须使用线程安全的sync.map
@@ -17,4 +22,4 @@ return
 eventHandlers := handlers.([]eventHandler)
 ```
 
-在单元测试中不能立马收到消息，但是在main方法中可以。不知道为什么。
+在单元测试中不能立马收到消息，但是在main方法中可以。不知道为什么。很神奇，如果在每个里面输出时间，它就能正常打出来。

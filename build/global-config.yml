@@ -1,0 +1,39 @@
+
+environment: dev
+configurations:
+  - profile: dev
+    database:
+      name: mysql
+      url: 'root:123456@tcp(127.0.0.1:3306)/leopard?charset=utf8mb4&parseTime=True&loc=Local'
+    server:
+      port: '8000'
+    logger:
+      level: debug
+      path: '/home/pleuvoir/doc/test'
+      filename: demo
+      maxAge: 1440h
+      rotationTime: 24h
+  - profile: prod
+    database:
+      name: mysql
+      url: 'root:123456@tcp(127.0.0.1:3306)/leopard?charset=utf8mb4&parseTime=True&loc=Local'
+    server:
+      port: '8000'
+    logger:
+      level: debug
+      path: '/home/pleuvoir/doc/test'
+      filename: demo
+      maxAge: 1440h
+      rotationTime: 24h
+  - profile: test
+    database:
+      name: sqlite3
+      url: '/home/pleuvoir/workspace/syberos/spm-serv/data.db'
+    server:
+      port: '8000'
+    logger:
+      level: debug
+      path: '/home/pleuvoir/doc/test'
+      filename: demo
+      maxAge: 1440h
+      rotationTime: 24h
