@@ -1,0 +1,9 @@
+{"level":"info","msg":"get","time":"2022-11-13T00:28:47+08:00"}
+{"level":"info","msg":"get","time":"2022-11-13T00:29:33+08:00"}
+{"level":"error","msg":"i am error","time":"2022-11-13T00:29:33+08:00"}
+{"level":"info","msg":"print","time":"2022-11-13T00:29:33+08:00"}
+{"level":"warning","msg":"i am warn 122","time":"2022-11-13T00:29:33+08:00"}
+{"level":"info","msg":"get","time":"2022-11-13T00:29:52+08:00"}
+{"level":"error","msg":"i am error","time":"2022-11-13T00:29:52+08:00"}
+{"level":"info","msg":"print","time":"2022-11-13T00:29:52+08:00"}
+{"level":"warning","msg":"i am warn 122","time":"2022-11-13T00:29:52+08:00"}

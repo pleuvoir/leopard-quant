@@ -28,3 +28,9 @@ eventHandlers := handlers.([]eventHandler)
 ## 加载配置文件
 
 可以根据当前项目根路径/当前项目可执行路径/环境变量指定/profile 读取全局文件配置
+
+## 引擎
+
+时间格式化，在GOLAND中输入 YY 什么的就会有提示
+
+https://zhuanlan.zhihu.com/p/28441006
