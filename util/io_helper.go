@@ -33,3 +33,12 @@ func CurrentPath() (string, error) {
 	}
 	return filepath.Dir(dir), nil
 }
+
+// RootPath 获取项目根路径
+func RootPath() (string, error) {
+	dir, err := filepath.Abs("")
+	if err != nil {
+		return "", err
+	}
+	return filepath.Dir(dir), nil
+}

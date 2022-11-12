@@ -3,7 +3,7 @@ package log
 import (
 	"fmt"
 	"github.com/gookit/color"
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/lestrrat-go/file-rotatelogs"
 	"github.com/pkg/errors"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
@@ -144,7 +144,7 @@ func Panicln(args ...interface{}) {
 // param
 //
 //	config: 系统配置
-func InitLog(config *config.GlobalConfig) {
+func InitLog(config *config.ApplicationConf) {
 	if log != nil {
 		log.Warn("日志系统已初始化，请不要重复调用InitLog")
 		return
