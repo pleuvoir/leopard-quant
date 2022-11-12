@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gookit/color"
 	"gopkg.in/yaml.v3"
 	"leopard-quant/util"
@@ -13,11 +14,11 @@ import (
 type LoadState int
 
 const (
-	ApplicationEnvVar               = "application" //环境变量中配置文件路径
-	globalSettingFileName           = `application.yml`
-	Unload                LoadState = -1 // 未加载
-	Loading                         = 0  // 加载中
-	Loaded                          = 1  // 已加载
+	ApplicationEnvVar                  = "application.path"    //环境变量中配置文件路径
+	ApplicationEnvProfileVar           = `application.profile` //环境变量中配置文件profile
+	Unload                   LoadState = -1                    // 未加载
+	Loading                            = 0                     // 加载中
+	Loaded                             = 1                     // 已加载
 )
 
 type ApplicationConf struct {
@@ -32,7 +33,7 @@ func NewApplicationConf() *ApplicationConf {
 
 // Load 加载配置
 func (c *ApplicationConf) Load() error {
-	var err error = nil
+	var err error
 	if c.load == Loading {
 		return errors.New("正在加载应用配置，请不要重复调用Load")
 	}
@@ -59,52 +60,57 @@ func (c *ApplicationConf) Load() error {
 	if isLoad {
 		return nil
 	}
+
+	//获取profile
+	var profile string
+	profile, err = c.fileProfileFromEnvVar()
+	if err != nil {
+		return err
+	}
+	c.Environment = profile
+
 	var basePath string
+
 	//从当前目录下读取，可执行目录
 	if basePath, err = c.currentPath(); err != nil {
 		return err
 	}
 
-	if err = c.tryLoad(basePath); err != nil {
-		return err
+	if exist, loadErr := c.tryLoad(basePath); exist && loadErr == nil {
+		return nil
 	}
 
 	//从项目根目录下读取
 	if basePath, err = c.rootPath(); err != nil {
 		return err
 	}
-	if err = c.tryLoad(basePath); err != nil {
-		return err
+
+	if exist, loadErr := c.tryLoad(basePath); exist && loadErr == nil {
+		return nil
 	}
 
 	err = errors.New("configuration file not found")
-	return err
+	return nil
 }
 
-func (c *ApplicationConf) tryLoad(basePath string) error {
-	var err error
-	configFile := filepath.Join(basePath, "build", "application.yml")
+// 尝试加载文件，存在返回 true 不存在返回 false
+func (c *ApplicationConf) tryLoad(basePath string) (isLoad bool, loadErr error) {
+	configFile := filepath.Join(basePath, "build", fmt.Sprintf("application-%s.yml", c.Environment))
 	if util.IsExists(configFile) {
-		if err = c.loadFromYml(configFile); err != nil {
-			return err
+		if loadErr = c.loadFromYml(configFile); loadErr != nil {
+			return true, loadErr
 		}
-		return nil
+		return true, nil
 	}
-	configFile = filepath.Join(basePath, "build", "application.yaml")
+	configFile = filepath.Join(basePath, "build", fmt.Sprintf("application-%s.json", c.Environment))
 	if util.IsExists(configFile) {
-		if err = c.loadFromYml(configFile); err != nil {
-			return err
+		if loadErr = c.loadFromJson(configFile); loadErr != nil {
+			return true, loadErr
 		}
-		return nil
+		return true, nil
 	}
-	configFile = filepath.Join(basePath, "build", "application.json")
-	if util.IsExists(configFile) {
-		if err = c.loadFromJson(configFile); err != nil {
-			return err
-		}
-		return nil
-	}
-	return err
+
+	return false, errors.New(fmt.Sprintf("configuration file not found, basePath is %s", basePath))
 }
 
 func (c *ApplicationConf) loadFromEnvVar() (bool, error) {
@@ -133,6 +139,15 @@ func (c *ApplicationConf) fileFromEnvVar() string {
 	return ""
 }
 
+// 从环境变量中获取配置文件profile，必须提供
+func (c *ApplicationConf) fileProfileFromEnvVar() (string, error) {
+	configPathProfile := os.Getenv(ApplicationEnvProfileVar)
+	if configPathProfile != "" {
+		return configPathProfile, nil
+	}
+	return "", errors.New(fmt.Sprintf("not found env %s ", ApplicationEnvProfileVar))
+}
+
 func (c *ApplicationConf) rootPath() (string, error) {
 	dir, err := filepath.Abs("../")
 	if err != nil {
@@ -155,13 +170,12 @@ func (c *ApplicationConf) loadFromYml(path string) error {
 	if err != nil {
 		return err
 	}
-	content := &ConfContent{}
-	err = yaml.Unmarshal(data, content)
+	conf := &EnvironmentConf{}
+	err = yaml.Unmarshal(data, conf)
 	if err != nil {
 		return err
 	}
-	c.Environment = content.Environment
-	c.findEnvironmentConfig(content, content.Environment)
+	color.Printf("<light_green>global config:</> %+v\n", c.EnvironmentConf)
 	return nil
 }
 
@@ -171,24 +185,13 @@ func (c *ApplicationConf) loadFromJson(path string) error {
 	if err != nil {
 		return err
 	}
-	content := &ConfContent{}
-	err = json.Unmarshal(data, content)
+	conf := &EnvironmentConf{}
+	err = json.Unmarshal(data, conf)
 	if err != nil {
 		return err
 	}
-	c.Environment = content.Environment
-	c.findEnvironmentConfig(content, content.Environment)
+	color.Printf("<light_green>global config:</> %+v\n", c.EnvironmentConf)
 	return nil
-}
-
-func (c *ApplicationConf) findEnvironmentConfig(content *ConfContent, env string) {
-	for _, config := range content.Configurations {
-		if config.Profile == env {
-			c.EnvironmentConf = config
-			color.Printf("<light_green>global config:</> %+v\n", c.EnvironmentConf)
-			return
-		}
-	}
 }
 
 func (c *ApplicationConf) IsProd() bool {
@@ -217,13 +220,7 @@ type Logger struct {
 }
 
 type EnvironmentConf struct {
-	Profile  string   `json:"profile" yaml:"profile"`
 	Database Database `json:"database" yaml:"database"`
 	Server   Server   `json:"server" yaml:"server"`
 	Logger   Logger   `json:"logger" yaml:"logger"`
-}
-
-type ConfContent struct {
-	Environment    string            `json:"environment" yaml:"environment"`
-	Configurations []EnvironmentConf `json:"configurations" yaml:"configurations"`
 }
