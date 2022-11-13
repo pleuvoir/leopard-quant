@@ -127,9 +127,11 @@ func (ee *Engine) Put(event Event) {
 func (ee *Engine) StartSchedulerTimer() {
 	go func() {
 		newEvent := NewEvent(Timer, nil)
+		ticker := time.NewTicker(ee.TimeDuration)
+		defer ticker.Stop()
 		for ee.TimerActive {
+			<-ticker.C
 			ee.EventChan <- newEvent
-			time.Sleep(ee.TimeDuration)
 		}
 	}()
 

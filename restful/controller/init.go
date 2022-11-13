@@ -49,5 +49,5 @@ func Logger() gin.HandlerFunc {
 }
 
 func SetMode(config *config.ApplicationConfig) {
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 }

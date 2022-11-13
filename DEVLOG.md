@@ -41,3 +41,10 @@ https://zhuanlan.zhihu.com/p/28441006
 
 
 https://github.com/gin-gonic/gin#using-get-post-put-patch-delete-and-options
+
+
+## 转换sync.map
+
+
+TODO 
+无法得到map中所有元素，需要遍历一次加入到普通的map中，需要研究泛型 提取公共方法以便获取所有的值

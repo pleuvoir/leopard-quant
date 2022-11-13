@@ -18,7 +18,6 @@ type globalContent struct {
 
 func Init() {
 	Global = &globalContent{}
-
 	//初始化配置文件
 	initApplicationConfig()
 	//初始化日志
