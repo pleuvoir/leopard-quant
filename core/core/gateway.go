@@ -18,6 +18,14 @@ func (g *Gateway) OnTick(tick model.Tick) {
 	g.onEvent(event.Tick, tick)
 }
 
+func (g *Gateway) OnOrder(order model.Order) {
+	g.onEvent(event.Tick, order)
+}
+
+func (g *Gateway) OnTrade(trade model.Trade) {
+	g.onEvent(event.Tick, trade)
+}
+
 func (g *Gateway) onEvent(eventType event.Type, data any) {
 	g.EventEngine.Put(event.NewEvent(eventType, data))
 }

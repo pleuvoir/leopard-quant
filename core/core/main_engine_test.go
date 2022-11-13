@@ -14,7 +14,7 @@ func (h TimerEventHandler) GetType() event.Type {
 }
 
 func (TimerEventHandler) Process(event event.Event) {
-	fmt.Printf("TimerEventHandler receive event %+v %s \n", event, time.Now())
+	fmt.Printf("TimerEventInnerHandler receive event %+v %s \n", event, time.Now())
 }
 
 func TestNewMainEngine(t *testing.T) {
