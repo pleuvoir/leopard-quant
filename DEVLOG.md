@@ -36,3 +36,8 @@ eventHandlers := handlers.([]eventHandler)
 时间格式化，在GOLAND中输入 YY 什么的就会有提示
 
 https://zhuanlan.zhihu.com/p/28441006
+
+## 引入GIN
+
+
+https://github.com/gin-gonic/gin#using-get-post-put-patch-delete-and-options

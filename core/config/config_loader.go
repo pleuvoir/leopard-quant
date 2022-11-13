@@ -20,17 +20,17 @@ const (
 	Loaded                      = 1                  // 已加载
 )
 
-type ApplicationConf struct {
+type ApplicationConfig struct {
 	EnvironmentConf
 	load LoadState //配置加载状态
 }
 
-func NewApplicationConf() ApplicationConf {
-	return ApplicationConf{load: Unload}
+func NewApplicationConf() ApplicationConfig {
+	return ApplicationConfig{load: Unload}
 }
 
 // Load 加载配置
-func (c *ApplicationConf) Load() error {
+func (c *ApplicationConfig) Load() error {
 	var err error
 	if c.load == Loading {
 		return errors.New("正在加载应用配置，请不要重复调用Load")
@@ -75,7 +75,7 @@ func (c *ApplicationConf) Load() error {
 }
 
 // 尝试加载文件，存在返回 true 不存在返回 false
-func (c *ApplicationConf) tryLoad(basePath string) (isLoad bool, loadErr error) {
+func (c *ApplicationConfig) tryLoad(basePath string) (isLoad bool, loadErr error) {
 	configFile := filepath.Join(basePath, "build", "application.yml")
 	if util.IsExists(configFile) {
 		if loadErr = c.loadFromYml(configFile); loadErr != nil {
@@ -94,7 +94,7 @@ func (c *ApplicationConf) tryLoad(basePath string) (isLoad bool, loadErr error) 
 	return false, errors.New(fmt.Sprintf("configuration file not found, basePath is %s", basePath))
 }
 
-func (c *ApplicationConf) loadFromEnvVar() (bool, error) {
+func (c *ApplicationConfig) loadFromEnvVar() (bool, error) {
 	configFile := c.fileFromEnvVar()
 	if configFile == "" {
 		return false, nil
@@ -110,7 +110,7 @@ func (c *ApplicationConf) loadFromEnvVar() (bool, error) {
 }
 
 // 从环境变量中获取配置文件路径
-func (c *ApplicationConf) fileFromEnvVar() string {
+func (c *ApplicationConfig) fileFromEnvVar() string {
 	configPath := os.Getenv(ApplicationEnvVar)
 	if configPath != "" {
 		if util.IsExists(configPath) {
@@ -120,7 +120,7 @@ func (c *ApplicationConf) fileFromEnvVar() string {
 	return ""
 }
 
-func (c *ApplicationConf) currentPath() (string, error) {
+func (c *ApplicationConfig) currentPath() (string, error) {
 	dir, err := os.Executable()
 	if err != nil {
 		return "", err
@@ -128,7 +128,7 @@ func (c *ApplicationConf) currentPath() (string, error) {
 	return filepath.Dir(dir), nil
 }
 
-func (c *ApplicationConf) loadFromYml(path string) error {
+func (c *ApplicationConfig) loadFromYml(path string) error {
 	color.Println("<light_green>load config from:</>", path)
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -144,7 +144,7 @@ func (c *ApplicationConf) loadFromYml(path string) error {
 	return nil
 }
 
-func (c *ApplicationConf) loadFromJson(path string) error {
+func (c *ApplicationConfig) loadFromJson(path string) error {
 	color.Println("<light_green>load config from:</>", path)
 	data, err := os.ReadFile(path)
 	if err != nil {

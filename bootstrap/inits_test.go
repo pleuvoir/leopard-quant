@@ -7,6 +7,7 @@ import (
 
 func TestInit(t *testing.T) {
 
+	Init()
 	conf := Global.ApplicationConf
 	t.Logf("%+v", conf)
 

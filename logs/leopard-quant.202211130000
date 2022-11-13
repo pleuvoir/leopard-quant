@@ -1,0 +1,58 @@
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:39:25+08:00"}
+{"level":"info","msg":"%v\u0026{0xc000634230 2000000000 3 0x136dd80 8000 2}","time":"2022-11-13T16:39:25+08:00"}
+{"level":"info","msg":"Shutdown Server ...","time":"2022-11-13T16:43:39+08:00"}
+{"level":"info","msg":"Server exiting","time":"2022-11-13T16:43:39+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:43:43+08:00"}
+{"level":"error","msg":"\u003cnil\u003e","time":"2022-11-13T16:43:43+08:00"}
+{"level":"info","msg":"| 404 |         154ns |       127.0.0.1 | GET | /","time":"2022-11-13T16:43:44+08:00"}
+{"level":"info","msg":"| 404 |         124ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:43:44+08:00"}
+{"level":"info","msg":"Shutdown Server ...","time":"2022-11-13T16:48:22+08:00"}
+{"level":"info","msg":"Server exiting","time":"2022-11-13T16:48:22+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:48:26+08:00"}
+{"level":"info","msg":"| 200 |      63.794µs |       127.0.0.1 | GET | /test/","time":"2022-11-13T16:48:26+08:00"}
+{"level":"info","msg":"Shutdown Server ...","time":"2022-11-13T16:48:43+08:00"}
+{"level":"info","msg":"Server exiting","time":"2022-11-13T16:48:43+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:48:46+08:00"}
+{"level":"info","msg":"| 200 |       12.56µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:48:46+08:00"}
+{"level":"info","msg":"| 404 |         110ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:48:46+08:00"}
+{"level":"info","msg":"| 200 |       4.976µs |       127.0.0.1 | GET | /test/echo?ping=1","time":"2022-11-13T16:49:19+08:00"}
+{"level":"info","msg":"| 404 |         119ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:49:19+08:00"}
+{"level":"info","msg":"| 200 |       60.75µs |       127.0.0.1 | GET | /test/echo?ping=1","time":"2022-11-13T16:51:36+08:00"}
+{"level":"info","msg":"| 404 |         158ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:51:36+08:00"}
+{"level":"info","msg":"Shutdown Server ...","time":"2022-11-13T16:51:47+08:00"}
+{"level":"info","msg":"Server exiting","time":"2022-11-13T16:51:47+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:51:50+08:00"}
+{"level":"info","msg":"| 200 |      75.968µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:51:51+08:00"}
+{"level":"info","msg":"| 404 |         128ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:51:51+08:00"}
+{"level":"info","msg":"| 200 |      10.804µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:51:53+08:00"}
+{"level":"info","msg":"| 404 |         149ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:51:53+08:00"}
+{"level":"info","msg":"| 200 |      22.831µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:51:55+08:00"}
+{"level":"info","msg":"| 200 |      10.899µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:51:55+08:00"}
+{"level":"info","msg":"| 200 |      25.906µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:51:58+08:00"}
+{"level":"info","msg":"| 404 |         121ns |       127.0.0.1 | GET | /favicon.ico","time":"2022-11-13T16:51:59+08:00"}
+{"level":"info","msg":"| 200 |      39.158µs |       127.0.0.1 | GET | /test/echo?test=1","time":"2022-11-13T16:52:06+08:00"}
+{"level":"info","msg":"| 200 |      10.108µs |       127.0.0.1 | GET | /test/echo?test=1\u0026hehe=2","time":"2022-11-13T16:52:10+08:00"}
+{"level":"info","msg":"Shutdown Server ...","time":"2022-11-13T16:52:18+08:00"}
+{"level":"info","msg":"Server exiting","time":"2022-11-13T16:52:18+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:54:50+08:00"}
+{"level":"info","msg":"{{0xc0005a20e0 -1 200} 0xc0005a0000 0xc0005a0100 [] [0x14ce1a0 0x1538e80 0x1539760] 2 /test/echo 0xc000580680 0xc000012210 0xc000012228 {{0 0} 0 0 0 0} map[]  [] map[] map[] 0}","time":"2022-11-13T16:54:50+08:00"}
+{"level":"info","msg":"\u0026{{0xc0005a20e0 -1 200} 0xc0005a0000 0xc0005a0100 [] [0x14ce1a0 0x1538e80 0x1539760] 2 /test/echo 0xc000580680 0xc000012210 0xc000012228 {{0 0} 0 0 0 0} map[]  [] map[] map[] 0}","time":"2022-11-13T16:54:50+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:55:15+08:00"}
+{"level":"info","msg":"{{0xc0000d00e0 -1 200} 0xc00024a000 0xc00024a100 [] [0x1329060 0x136ed80 0x136f640] 2 /test/echo 0xc000103520 0xc00019a5a0 0xc00019a6d8 {{0 0} 0 0 0 0} map[]  [] map[] map[] 0}","time":"2022-11-13T16:55:15+08:00"}
+{"level":"info","msg":"%+v\u0026{{0xc0000d00e0 -1 200} 0xc00024a000 0xc00024a100 [] [0x1329060 0x136ed80 0x136f640] 2 /test/echo 0xc000103520 0xc00019a5a0 0xc00019a6d8 {{0 0} 0 0 0 0} map[]  [] map[] map[] 0}","time":"2022-11-13T16:55:15+08:00"}
+{"level":"info","msg":"| 200 |     257.082µs |       127.0.0.1 | GET | /test/echo","time":"2022-11-13T16:55:15+08:00"}
+{"level":"info","msg":"{{0xc0005aa0e0 -1 200} 0xc00024a400 0xc0000b0200 [] [0x1329060 0x136ed80 0x136f640] 2 /test/echo 0xc000103520 0xc0005b6000 0xc0005b6018 {{0 0} 0 0 0 0} map[]  [] map[] map[] 0}","time":"2022-11-13T16:56:07+08:00"}
+{"level":"info","msg":"%+v\u0026{{0xc0005aa0e0 -1 200} 0xc00024a400 0xc0000b0200 [] [0x1329060 0x136ed80 0x136f640] 2 /test/echo 0xc000103520 0xc0005b6000 0xc0005b6018 {{0 0} 0 0 0 0} map[]  [] map[] map[] 0}","time":"2022-11-13T16:56:07+08:00"}
+{"level":"info","msg":"| 200 |      263.13µs |       127.0.0.1 | GET | /test/echo?test=1\u0026hehe=2","time":"2022-11-13T16:56:07+08:00"}
+{"level":"info","msg":"Shutdown Server ...","time":"2022-11-13T16:56:12+08:00"}
+{"level":"info","msg":"Server exiting","time":"2022-11-13T16:56:12+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:56:17+08:00"}
+{"level":"info","msg":"Server started.","time":"2022-11-13T16:57:46+08:00"}
+{"level":"info","msg":"","time":"2022-11-13T16:57:46+08:00"}
+{"level":"info","msg":"| 404 |         142ns |       127.0.0.1 | GET | /welcome/echo?name=1","time":"2022-11-13T17:07:56+08:00"}
+{"level":"info","msg":"","time":"2022-11-13T17:08:00+08:00"}
+{"level":"info","msg":"| 200 |     180.215µs |       127.0.0.1 | GET | /welcome?name=1","time":"2022-11-13T17:08:00+08:00"}
+{"level":"info","msg":"","time":"2022-11-13T17:08:08+08:00"}
+{"level":"info","msg":"| 200 |     199.696µs |       127.0.0.1 | GET | /welcome?firstname=1","time":"2022-11-13T17:08:08+08:00"}
+{"level":"info","msg":"1","time":"2022-11-13T17:10:34+08:00"}
+{"level":"info","msg":"| 200 |      61.004µs |       127.0.0.1 | GET | /welcome?lastname=1","time":"2022-11-13T17:12:37+08:00"}

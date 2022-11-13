@@ -144,7 +144,7 @@ func Panicln(args ...interface{}) {
 // param
 //
 //	config: 系统配置
-func InitLog(config *config.ApplicationConf) {
+func InitLog(config *config.ApplicationConfig) {
 	if log != nil {
 		log.Warn("日志系统已初始化，请不要重复调用InitLog")
 		return
