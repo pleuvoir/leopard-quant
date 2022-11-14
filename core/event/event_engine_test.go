@@ -41,9 +41,16 @@ func TestNewEventEngine(t *testing.T) {
 
 	engine.StartSchedulerTimer()
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(3 * time.Second)
 
-	engine.UnRegister(timerEventHandler)
+	//engine.UnRegister(timerEventHandler)
+
+	engine.Put(logEvent)
+
+	//engine.StopAll()
+
+	engine.StopEventConsumer()
+	engine.StopSchedulerTimer()
 
 	engine.Put(logEvent)
 
