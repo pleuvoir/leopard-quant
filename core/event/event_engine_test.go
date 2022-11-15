@@ -8,7 +8,7 @@ import (
 
 type TimerEventHandler struct{}
 
-func (h TimerEventHandler) GetType() Type {
+func (h TimerEventHandler) WithType() Type {
 	return Timer
 }
 
@@ -22,7 +22,7 @@ func (LogEventHandler) Process(event Event) {
 	fmt.Printf("LogEventHandler receive event %+v \n", event)
 }
 
-func (LogEventHandler) GetType() Type {
+func (LogEventHandler) WithType() Type {
 	return Log
 }
 

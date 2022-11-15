@@ -1,4 +1,4 @@
-package core
+package engine
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 type TimerEventHandler struct{}
 
-func (h TimerEventHandler) GetType() event.Type {
+func (h TimerEventHandler) WithType() event.Type {
 	return event.Timer
 }
 
@@ -21,7 +21,7 @@ func TestNewMainEngine(t *testing.T) {
 
 	mainEngine := NewMainEngine(event.NewEventEngine())
 
-	t.Log(mainEngine.TodayDate)
+	t.Log(mainEngine.todayDate)
 
 	eventEngine := mainEngine.EventEngine
 

@@ -41,7 +41,7 @@ type Engine struct {
 // 事件处理器
 type eventHandler interface {
 	Process(event Event)
-	GetType() Type
+	WithType() Type
 }
 
 type Event struct {
@@ -57,8 +57,8 @@ func NewEvent(eventType Type, data any) Event {
 // NewEventEngine 创建引擎
 func NewEventEngine() *Engine {
 	engine := Engine{
-		Active:         true,
-		TimerActive:    true,
+		Active:         false,
+		TimerActive:    false,
 		TimeDuration:   time.Second,
 		HandlersMap:    map[Type][]eventHandler{},
 		CommonHandlers: []eventHandler{},
@@ -84,7 +84,7 @@ func (e *Engine) Process(event Event) {
 func (e *Engine) Register(handler eventHandler) {
 	e.registerMutex.Lock()
 	defer e.registerMutex.Unlock()
-	eventType := handler.GetType()
+	eventType := handler.WithType()
 	HandlersMap := e.HandlersMap
 	eventHandlers := HandlersMap[eventType]
 	eventHandlers = append(eventHandlers, handler)
@@ -95,7 +95,7 @@ func (e *Engine) Register(handler eventHandler) {
 func (e *Engine) UnRegister(handler eventHandler) {
 	e.registerMutex.Lock()
 	defer e.registerMutex.Unlock()
-	eventType := handler.GetType()
+	eventType := handler.WithType()
 	handlersMap := e.HandlersMap
 	eventHandlers := handlersMap[eventType]
 	var newHandlers []eventHandler
@@ -122,21 +122,34 @@ func (e *Engine) StopAll() {
 func (e *Engine) StopSchedulerTimer() {
 	e.startMutex.Lock()
 	defer e.startMutex.Unlock()
-	e.stopChan <- true
+	if e.TimerActive {
+		e.stopChan <- true
+	}
 }
 
 // StopEventConsumer 停止普通事件引擎
 func (e *Engine) StopEventConsumer() {
 	e.startMutex.Lock()
 	defer e.startMutex.Unlock()
-	e.Active = false
-	close(e.EventChan)
+	if e.Active {
+		e.Active = false
+		close(e.EventChan)
+	}
+}
+
+// StartAll 启动所有
+func (e *Engine) StartAll() {
+	e.StartSchedulerTimer()
+	e.StartConsumer()
 }
 
 // StartConsumer 消费消息  普通消息和定时器消息分开处理
 func (e *Engine) StartConsumer() {
 	e.startMutex.Lock()
 	defer e.startMutex.Unlock()
+	if e.Active {
+		return
+	}
 	go func() {
 	over:
 		for e.Active {
@@ -163,21 +176,17 @@ func (e *Engine) StartConsumer() {
 			}
 		}
 	}()
-}
-
-// Put 发布事件
-func (e *Engine) Put(event Event) {
-	if e.Active {
-		e.EventChan <- event
-	} else {
-		color.Redln("事件引擎已关闭，不再接收事件。", event)
-	}
+	e.Active = true
+	color.Greenln("事件引擎已启动，定时器已启动。")
 }
 
 // StartSchedulerTimer 启动定时器，周期执行
 func (e *Engine) StartSchedulerTimer() {
 	e.startMutex.Lock()
 	defer e.startMutex.Unlock()
+	if e.TimerActive {
+		return
+	}
 	go func() {
 		newEvent := NewEvent(Timer, nil)
 		ticker := time.NewTicker(e.TimeDuration)
@@ -192,5 +201,15 @@ func (e *Engine) StartSchedulerTimer() {
 			}
 		}
 	}()
+	e.TimerActive = true
+	color.Greenln("事件引擎已启动，定时器已启动。")
+}
 
+// Put 发布事件
+func (e *Engine) Put(event Event) {
+	if e.Active {
+		e.EventChan <- event
+	} else {
+		color.Redln("事件引擎已关闭，不再接收事件。", event)
+	}
 }

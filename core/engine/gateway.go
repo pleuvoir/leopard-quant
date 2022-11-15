@@ -1,8 +1,8 @@
-package core
+package engine
 
 import (
+	"leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
-	"leopard-quant/core/model"
 )
 
 type Gateway struct {

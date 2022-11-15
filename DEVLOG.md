@@ -48,3 +48,16 @@ https://github.com/gin-gonic/gin#using-get-post-put-patch-delete-and-options
 
 TODO 
 无法得到map中所有元素，需要遍历一次加入到普通的map中，需要研究泛型 提取公共方法以便获取所有的值
+
+## 抽象接口
+
+可以看这篇文章，继承重写都讲了。
+https://zhuanlan.zhihu.com/p/88480107
+
+需要注意，GOLAND里不会再提示可以重写这个方法，需要自己手动覆盖，(receiver) 必须是子类自己
+
+    var aa IEngine = engine
+    aa.Start()
+
+可以这样转换，先这样。父类符合接收子类做为形参传入。非多态问题
+https://zhuanlan.zhihu.com/p/133693915  继承这里应该不能这么用 明天再看

@@ -9,6 +9,9 @@ type Order struct {
 type Trade struct {
 }
 
+type Bar struct {
+}
+
 // RunMode 运行模式
 type RunMode struct {
 	Code string

@@ -1,9 +1,9 @@
-package core
+package engine
 
 import (
 	"fmt"
+	"leopard-quant/core/engine/model"
 	"leopard-quant/core/log"
-	"leopard-quant/core/model"
 )
 
 type StrategyConfig map[string]any
