@@ -7,6 +7,7 @@ type Order struct {
 }
 
 type Trade struct {
+	Id string
 }
 
 type Bar struct {

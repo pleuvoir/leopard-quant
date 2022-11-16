@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"leopard-quant/bootstrap"
 	"leopard-quant/core/event"
 	"testing"
 	"time"
@@ -19,34 +20,17 @@ func (TimerEventHandler) Process(event event.Event) {
 
 func TestNewMainEngine(t *testing.T) {
 
+	bootstrap.Init()
+
 	mainEngine := NewMainEngine(event.NewEventEngine())
+	mainEngine.InitEngines()
 
 	t.Log(mainEngine.todayDate)
 
-	eventEngine := mainEngine.EventEngine
+	//ch := make(chan any)
 
-	timerEventHandler := TimerEventHandler{}
-	eventEngine.Register(timerEventHandler)
+	defer func() {
+		mainEngine.Stop()
+	}()
 
-	eventEngine.Put(event.NewEvent(event.Timer, "我是时间事件"))
-
-	newEngine := NewEngine("default", event.NewEventEngine())
-	mainEngine.AddEngine(newEngine)
-
-	defaultEngine, err := mainEngine.GetEngine("default")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("default ==> %+v \n", defaultEngine)
-	fmt.Printf("default equal %v \n", defaultEngine == newEngine)
-
-	engines := mainEngine.GetAllEngine()
-	for _, engine := range engines {
-		fmt.Printf("current engine  ==> %+v \n", engine)
-
-	}
-
-	ch := make(chan any)
-	<-ch
 }

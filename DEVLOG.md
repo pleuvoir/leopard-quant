@@ -61,3 +61,51 @@ https://zhuanlan.zhihu.com/p/88480107
 
 可以这样转换，先这样。父类符合接收子类做为形参传入。非多态问题
 https://zhuanlan.zhihu.com/p/133693915  继承这里应该不能这么用 明天再看
+
+
+## 接口适配器
+
+遇到的问题是在订单引擎中注册事件，注册事件必须声明结构体很麻烦，并且事件监听中是需要操作订单引擎中的变量。问题就变成了先要创建结构体，并且结构体持有订单的引用。
+
+
+```go
+// 事件处理器
+type eventHandler interface {
+	Process(event Event)
+}
+
+// 接口适配器
+// 可以将函数原型为 fun(event Event)的函数直接做为eventHandler接口的实现进行传入
+// 可以无需定义结构体
+type AdaptEventHandlerFunc func(event Event)
+
+func (funcW AdaptEventHandlerFunc) Process(event Event) {
+	funcW(event)
+}
+
+func Process(event Event) {
+    fmt.Printf("LogEventHandler receive event %+v \n", event)
+}
+
+func TestHandlerFunc(t *testing.T) {
+    handlerFunc := AdaptEventHandlerFunc(Process)
+    engine := NewEventEngine()
+    engine.Register(Log,handlerFunc)
+}
+
+```
+
+有了上一步，可以通过匿名函数的形式操作当前作用域下的变量了，不用在传了。
+
+```go
+func (o *OrderEngine) registerEvent() {
+	o.registerListener(event.Trade, func(event event.Event) {
+		trade, _ := event.EventData.(model.Trade)
+		o.tradeMap[event.EventType] = trade
+	})
+}
+
+func (o *OrderEngine) registerListener(t event.Type, f func(e event.Event)) {
+	o.mainEngine.eventEngine.Register(t, event.AdaptEventHandlerFunc(f))
+}
+```
