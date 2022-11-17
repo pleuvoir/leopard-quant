@@ -46,7 +46,7 @@ type eventListener interface {
 // AdaptEventHandlerFunc 接口适配器
 // 可以将函数原型为 fun(event Event)的函数直接做为eventHandler接口的实现进行传入
 // 可以无需定义结构体
-type AdaptEventHandlerFunc func(event Event)
+type AdaptEventHandlerFunc func(e Event)
 
 func (funcW AdaptEventHandlerFunc) Process(event Event) {
 	funcW(event)

@@ -1,6 +1,7 @@
 package model
 
 type Tick struct {
+	Symbol string
 }
 
 type Order struct {

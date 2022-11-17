@@ -14,7 +14,6 @@ func TestStrategyTemplate_OnTick(t *testing.T) {
 	engine := NewAlgoEngine(mainEngine)
 
 	engine.initEngine()
-	engine.RegisterEvent()
 
 	engine.Start()
 

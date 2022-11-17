@@ -109,3 +109,13 @@ func (o *OrderEngine) registerListener(t event.Type, f func(e event.Event)) {
 	o.mainEngine.eventEngine.Register(t, event.AdaptEventHandlerFunc(f))
 }
 ```
+
+## 循环依赖 && 反射创建对象
+
+
+TODO 
+```
+package leopard-quant/core/engine
+	imports leopard-quant/algorithm
+	imports leopard-quant/core/engine: import cycle not allowed
+```
