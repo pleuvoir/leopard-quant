@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type IEngine interface {
+type Engineer interface {
 	Name() string
 	Start()
 	Stop()
@@ -16,16 +16,16 @@ type IEngine interface {
 const DefaultMainEngineName = "leopard-main-engine"
 
 type MainEngine struct {
-	todayDate   string
+	TodayDate   string
 	eventEngine *event.Engine
-	engineMap   sync.Map //[string]IEngine 引擎合集
+	engineMap   sync.Map //[string]Engineer 引擎合集
 	gatewayMap  sync.Map //[string]Gateway 网关合集
 }
 
 // NewMainEngine 构建主引擎
 func NewMainEngine(eventEngine *event.Engine) *MainEngine {
 	mainEngine := MainEngine{}
-	mainEngine.todayDate = time.Now().Format("2006-01-02")
+	mainEngine.TodayDate = time.Now().Format("2006-01-02")
 	mainEngine.eventEngine = eventEngine
 	mainEngine.engineMap = sync.Map{}
 	mainEngine.gatewayMap = sync.Map{}
@@ -33,8 +33,6 @@ func NewMainEngine(eventEngine *event.Engine) *MainEngine {
 }
 
 func (m *MainEngine) InitEngines() {
-	//注册算法引擎
-	m.AddEngine(NewAlgoEngine(m))
 	//注册订单引擎
 	m.AddEngine(NewOrderEngine(m))
 	//注册网关
@@ -44,6 +42,11 @@ func (m *MainEngine) InitEngines() {
 // 加载网关引擎
 func (m *MainEngine) loadGateway() {
 	m.AddGateway(NewGateway("mock", m.eventEngine))
+}
+
+// RegisterListener 注册事件
+func (m *MainEngine) RegisterListener(t event.Type, f func(e event.Event)) {
+	m.eventEngine.Register(t, event.AdaptEventHandlerFunc(f))
 }
 
 func (m *MainEngine) Name() string {
@@ -72,24 +75,24 @@ func (m *MainEngine) Stop() {
 }
 
 // AddEngine 增加引擎
-func (m *MainEngine) AddEngine(engine IEngine) {
+func (m *MainEngine) AddEngine(engine Engineer) {
 	m.engineMap.Store(engine.Name(), engine)
 }
 
 // GetEngine 获取引擎
-func (m *MainEngine) GetEngine(engineName string) IEngine {
+func (m *MainEngine) GetEngine(engineName string) Engineer {
 	e, ok := m.engineMap.Load(engineName)
 	if ok {
-		engine := e.(IEngine)
+		engine := e.(Engineer)
 		return engine
 	}
 	return nil
 }
 
-func (m *MainEngine) GetAllEngine() (engines []IEngine) {
-	r := make(map[string]IEngine)
+func (m *MainEngine) GetAllEngine() (engines []Engineer) {
+	r := make(map[string]Engineer)
 	m.engineMap.Range(func(key, value any) bool {
-		r[key.(string)] = value.(IEngine)
+		r[key.(string)] = value.(Engineer)
 		return true
 	})
 	for _, engine := range r {
@@ -104,19 +107,19 @@ func (m *MainEngine) AddGateway(gateway *GatewayEngine) {
 }
 
 // GetGateway 获取网关
-func (m *MainEngine) GetGateway(engineName string) IEngine {
+func (m *MainEngine) GetGateway(engineName string) Engineer {
 	e, ok := m.gatewayMap.Load(engineName)
 	if ok {
-		engine := e.(IEngine)
+		engine := e.(Engineer)
 		return engine
 	}
 	return nil
 }
 
-func (m *MainEngine) GetAllGateway() (engines []IEngine) {
-	r := make(map[string]IEngine)
+func (m *MainEngine) GetAllGateway() (engines []Engineer) {
+	r := make(map[string]Engineer)
 	m.gatewayMap.Range(func(key, value any) bool {
-		r[key.(string)] = value.(IEngine)
+		r[key.(string)] = value.(Engineer)
 		return true
 	})
 	for _, engine := range r {

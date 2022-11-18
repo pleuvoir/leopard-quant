@@ -113,9 +113,10 @@ func (o *OrderEngine) registerListener(t event.Type, f func(e event.Event)) {
 ## 循环依赖 && 反射创建对象
 
 
-TODO 
 ```
 package leopard-quant/core/engine
 	imports leopard-quant/algorithm
 	imports leopard-quant/core/engine: import cycle not allowed
 ```
+
+可以将接口定义在engine包中，在算法包中实现接口。但是必须所有的接口方法都导出（大写），外部的包才算实现了这个接口。

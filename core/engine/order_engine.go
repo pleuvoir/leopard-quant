@@ -36,7 +36,7 @@ func (o *OrderEngine) registerEvent() {
 }
 
 func (o *OrderEngine) addListener(t event.Type, f func(e event.Event)) {
-	o.mainEngine.eventEngine.Register(t, event.AdaptEventHandlerFunc(f))
+	o.mainEngine.RegisterListener(t, f)
 }
 
 func (o *OrderEngine) Name() string {
