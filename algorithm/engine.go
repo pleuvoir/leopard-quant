@@ -1,4 +1,4 @@
-package base
+package algorithm
 
 import (
 	"leopard-quant/core/engine"
@@ -14,7 +14,7 @@ type AlgoEngine struct {
 	name       string
 	mainEngine *engine.MainEngine
 	Active     bool
-	factory    *AlgoTemplateFactory //模板分发工厂
+	factory    *AlgoTemplateBuilder //模板分发工厂
 }
 
 // NewAlgoEngine 构建算法引擎
@@ -27,8 +27,9 @@ func NewAlgoEngine(mainEngine *engine.MainEngine) *AlgoEngine {
 
 func (s *AlgoEngine) initEngine() {
 	s.factory = NewFactory(s)
+	s.factory.loadConfig()
 	//加载所有算法
-	s.factory.loadTemplates()
+	s.factory.LoadTemplates()
 	//注册工厂回调事件
 	s.registerFactoryEvent()
 }
@@ -39,13 +40,13 @@ func (s *AlgoEngine) Name() string {
 
 func (s *AlgoEngine) Start() {
 	s.Active = true
-	s.factory.start()
+	s.factory.Start()
 	log.Info("算法引擎已启动。")
 }
 
 func (s *AlgoEngine) Stop() {
 	s.Active = false
-	s.factory.stop()
+	s.factory.Stop()
 	log.Info("算法引擎已关闭。")
 }
 
@@ -56,21 +57,21 @@ func (s *AlgoEngine) registerFactoryEvent() {
 	f := s.factory
 	m.RegisterListener(event.Tick, func(e event.Event) {
 		if s.Active {
-			f.onTick(e.EventData.(Tick))
+			f.OnTick(e.EventData.(Tick))
 		} else {
 			log.Warnf("算法引擎未开启，丢弃Tick回调事件。")
 		}
 	})
 	m.RegisterListener(event.Bar, func(e event.Event) {
 		if s.Active {
-			f.onBar(e.EventData.(Bar))
+			f.OnBar(e.EventData.(Bar))
 		} else {
 			log.Warnf("算法引擎未开启，丢弃Bar回调事件。")
 		}
 	})
 	m.RegisterListener(event.Timer, func(e event.Event) {
 		if s.Active {
-			f.onTimer()
+			f.OnTimer()
 		} else {
 			log.Warnf("算法引擎未开启，丢弃Timer回调事件。")
 		}

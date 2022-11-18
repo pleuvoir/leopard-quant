@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"github.com/gin-gonic/gin"
-	"leopard-quant/algorithm/base"
+	"leopard-quant/algorithm"
 	"leopard-quant/core/config"
 	"leopard-quant/core/engine"
 	"leopard-quant/core/event"
@@ -14,7 +14,7 @@ var Global *globalContent
 
 type globalContent struct {
 	ApplicationConf config.ApplicationConfig
-	mainEngine      *engine.MainEngine
+	MainEngine      *engine.MainEngine
 	RestfulEngine   *gin.Engine
 }
 
@@ -33,7 +33,7 @@ func Init() {
 }
 
 func initAlgoEngine() {
-	e := base.NewAlgoEngine(Global.mainEngine)
+	e := algorithm.NewAlgoEngine(Global.MainEngine)
 	e.Start()
 }
 
@@ -41,7 +41,7 @@ func initMainEngine() {
 	mainEngine := engine.NewMainEngine(event.NewEventEngine())
 	mainEngine.InitEngines()
 	mainEngine.Start()
-	Global.mainEngine = mainEngine
+	Global.MainEngine = mainEngine
 }
 
 func initApplicationConfig() {
