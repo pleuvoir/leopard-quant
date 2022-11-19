@@ -18,5 +18,5 @@ func TestInit(t *testing.T) {
 	//
 	//log.Warnf("i am warn %s", "122")
 
-	time.Sleep(time.Second * 50)
+	time.Sleep(time.Second * 10)
 }

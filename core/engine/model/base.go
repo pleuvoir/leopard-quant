@@ -4,11 +4,21 @@ type Tick struct {
 	Symbol string
 }
 
+func (t Tick) UpdateTick(tick Tick) {
+
+}
+
 type Order struct {
+	Id string
+}
+
+func (o Order) IsActive() bool {
+	return false
 }
 
 type Trade struct {
-	Id string
+	Id      string
+	OrderId string
 }
 
 type Bar struct {

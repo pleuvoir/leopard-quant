@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"github.com/gin-gonic/gin"
-	"leopard-quant/algorithm"
+	"leopard-quant/algorithm/base"
 	"leopard-quant/core/config"
 	"leopard-quant/core/engine"
 	"leopard-quant/core/event"
@@ -33,7 +33,7 @@ func Init() {
 }
 
 func initAlgoEngine() {
-	e := algorithm.NewAlgoEngine(Global.MainEngine)
+	e := base.NewAlgoEngine(Global.MainEngine)
 	e.Start()
 }
 
