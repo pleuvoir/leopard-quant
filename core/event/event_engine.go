@@ -33,7 +33,7 @@ type Engine struct {
 	CommonHandlers []eventListener
 	EventChan      chan Event
 	TimerEventChan chan Event
-	stopChan       chan bool
+	stopChan       chan struct{}
 	startMutex     sync.Mutex
 	registerMutex  sync.Mutex
 }
@@ -72,7 +72,7 @@ func NewEventEngine() *Engine {
 		CommonHandlers: []eventListener{},
 		EventChan:      make(chan Event, 1000),
 		TimerEventChan: make(chan Event, 1000),
-		stopChan:       make(chan bool),
+		stopChan:       make(chan struct{}),
 	}
 	return &engine
 }
@@ -129,7 +129,7 @@ func (e *Engine) StopSchedulerTimer() {
 	e.startMutex.Lock()
 	defer e.startMutex.Unlock()
 	if e.TimerActive {
-		e.stopChan <- true
+		e.stopChan <- struct{}{}
 	}
 }
 

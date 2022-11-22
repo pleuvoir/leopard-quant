@@ -2,7 +2,6 @@ package base
 
 import (
 	"leopard-quant/algorithm"
-	"leopard-quant/algorithm/impl"
 	"leopard-quant/core/engine"
 	. "leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
@@ -45,16 +44,11 @@ func (s *AlgoEngine) Name() string {
 
 func (s *AlgoEngine) Start() {
 	//加载配置，初始所有生效的模板
-	//TODO
-
 	mainEngine := s.mainEngine
-	if _, err := algorithm.MakeInstance("noop"); err == nil {
-		//	template := NewAlgoTemplate(mainEngine, sub)
-		template := NewAlgoTemplate(mainEngine, &impl.NoopSub{})
-		//	sub.template = template
+	if sub, err := algorithm.MakeInstance("noop"); err == nil {
+		template := NewAlgoTemplate(mainEngine, sub)
 		s.nameAlgoTemplateMap[template.algoName] = template
 	}
-
 	for _, template := range s.nameAlgoTemplateMap {
 		template.start()
 	}

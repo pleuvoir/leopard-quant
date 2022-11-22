@@ -5,15 +5,20 @@ import (
 	"github.com/gookit/color"
 	"leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
+	"sync"
 )
 
 type GatewayEngine struct {
 	GatewayName string
 	EventEngine *event.Engine
+	eventPool   sync.Pool //对象池避免创建过多对象
 }
 
 func NewGateway(GatewayName string, eventEngine *event.Engine) *GatewayEngine {
-	return &GatewayEngine{GatewayName: GatewayName, EventEngine: eventEngine}
+	return &GatewayEngine{GatewayName: GatewayName, EventEngine: eventEngine,
+		eventPool: sync.Pool{New: func() any {
+			return new(event.Event)
+		}}}
 }
 
 func (g *GatewayEngine) Name() string {
@@ -41,5 +46,9 @@ func (g *GatewayEngine) OnTrade(trade model.Trade) {
 }
 
 func (g *GatewayEngine) onEvent(eventType event.Type, data any) {
-	g.EventEngine.Put(event.NewEvent(eventType, data))
+	e := g.eventPool.Get().(event.Event)
+	e.EventType = eventType
+	e.EventData = data
+	g.EventEngine.Put(e)
+	g.eventPool.Put(e)
 }

@@ -14,3 +14,7 @@ func TestGet(t *testing.T) {
 		t.Log(sub.Name())
 	}
 }
+
+func TestName(t *testing.T) {
+
+}

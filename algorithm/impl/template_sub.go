@@ -7,7 +7,7 @@ import (
 
 type TemplateSub interface {
 	OnStart(c Context)
-	OnStop()
+	OnStop(c Context)
 	OnTimer()
 	OnTrade(trade model.Trade)
 	OnTick(t model.Tick)
