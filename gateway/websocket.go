@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gookit/color"
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 	"leopard-quant/util"
 	"net/url"
 )
@@ -16,8 +17,17 @@ type Websocket struct {
 	c      *websocket.Conn
 }
 
+func NewWebsocket(scheme string, host string, path string) *Websocket {
+	w := Websocket{}
+	w.Scheme = scheme
+	w.Host = host
+	w.Path = path
+	w.done = make(chan struct{})
+	return &w
+}
+
 // Connect 连接WebSocket
-func (w Websocket) Connect() error {
+func (w *Websocket) Connect() error {
 	u := url.URL{Scheme: w.Scheme, Host: w.Host, Path: w.Path}
 	color.Greenf("connecting to %s", u.String())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
@@ -30,7 +40,7 @@ func (w Websocket) Connect() error {
 }
 
 // SendRawTextMessage 发送完整文本
-func (w Websocket) SendRawTextMessage(m string) error {
+func (w *Websocket) SendRawTextMessage(m string) error {
 	if err := w.c.WriteMessage(websocket.TextMessage, []byte(m)); err != nil {
 		color.Redf("SendTextMessage:", err)
 		return err
@@ -39,20 +49,30 @@ func (w Websocket) SendRawTextMessage(m string) error {
 }
 
 // SendJSONTextMessage 转换为JSON类型进行发送
-func (w Websocket) SendJSONTextMessage(m any) error {
+func (w *Websocket) SendJSONTextMessage(m any) error {
+	conn := w.c
+	if conn == nil {
+		return errors.Errorf("请先连接，再发送消息。")
+	}
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		color.Redf("SendTextMessage，转换JSON失败", err)
 		return err
 	}
-	if err := w.c.WriteMessage(websocket.TextMessage, bytes); err != nil {
+	if err := conn.WriteMessage(websocket.TextMessage, bytes); err != nil {
 		color.Redf("SendTextMessage，通知对端失败", err)
 		return err
 	}
 	return nil
 }
 
+// ReadMessage 读取消息
+func (w *Websocket) ReadMessage() (p []byte, e error) {
+	_, message, err := w.c.ReadMessage()
+	return message, err
+}
+
 // Close 关闭连接
-func (w Websocket) Close() {
+func (w *Websocket) Close() {
 	util.CloseQuietly(w.c)
 }

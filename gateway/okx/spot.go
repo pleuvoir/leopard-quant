@@ -1,7 +1,9 @@
 package okx
 
-import "leopard-quant/gateway"
-
 type Spot struct {
-	marketApi gateway.IMarketRest
+	Market
+}
+
+func NewSpot() Spot {
+	return Spot{NewMarketWS()}
 }

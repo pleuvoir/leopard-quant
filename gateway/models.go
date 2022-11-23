@@ -137,3 +137,11 @@ type OptionParameter struct {
 	Key   string
 	Value string
 }
+
+type TickerCallback func(t Ticker)
+type KlineCallback func(k Kline)
+
+type ComposeCallback struct {
+	TickerCallback
+	KlineCallback
+}

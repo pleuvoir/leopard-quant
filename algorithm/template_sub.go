@@ -1,7 +1,6 @@
-package impl
+package algorithm
 
 import (
-	"leopard-quant/core/engine"
 	"leopard-quant/core/engine/model"
 )
 
@@ -16,5 +15,5 @@ type TemplateSub interface {
 }
 
 type Context struct {
-	MainEngine *engine.MainEngine
+	Template *AlgoTemplate
 }

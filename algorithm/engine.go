@@ -1,22 +1,24 @@
-package base
+package algorithm
 
 import (
-	"leopard-quant/algorithm"
+	"github.com/pkg/errors"
 	"leopard-quant/core/engine"
 	. "leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
 	"leopard-quant/core/log"
+	"leopard-quant/util"
 )
 
 const DefaultAlgoEngineName = "leopard-algo-engine"
+const DefaultGatewayName = "okx"
 
 // AlgoEngine 算法引擎
 type AlgoEngine struct {
 	name                   string
 	mainEngine             *engine.MainEngine
-	nameAlgoTemplateMap    map[string]*AlgoTemplate   //模板名称：模板
-	orderIdAlgoTemplateMap map[string]*AlgoTemplate   //订单号：模板
-	symbolAlgoTemplateMap  map[string][]*AlgoTemplate //币种:[]模板
+	nameAlgoTemplateMap    map[string]*AlgoTemplate //模板名称：模板
+	orderIdAlgoTemplateMap map[string]*AlgoTemplate //订单号：模板
+	symbolAlgoTemplateMap  map[string][]string      //币种:[]模板名称
 }
 
 // NewAlgoEngine 构建算法引擎
@@ -25,7 +27,7 @@ func NewAlgoEngine(mainEngine *engine.MainEngine) *AlgoEngine {
 	e := AlgoEngine{name: DefaultAlgoEngineName, mainEngine: mainEngine}
 	e.nameAlgoTemplateMap = map[string]*AlgoTemplate{}
 	e.orderIdAlgoTemplateMap = map[string]*AlgoTemplate{}
-	e.symbolAlgoTemplateMap = map[string][]*AlgoTemplate{}
+	e.symbolAlgoTemplateMap = map[string][]string{}
 	e.initEngine()
 	e.registerEvent()
 	return &e
@@ -44,9 +46,8 @@ func (s *AlgoEngine) Name() string {
 
 func (s *AlgoEngine) Start() {
 	//加载配置，初始所有生效的模板
-	mainEngine := s.mainEngine
-	if sub, err := algorithm.MakeInstance("noop"); err == nil {
-		template := NewAlgoTemplate(mainEngine, sub)
+	if sub, err := MakeInstance("noop"); err == nil {
+		template := NewAlgoTemplate(s, sub)
 		s.nameAlgoTemplateMap[template.algoName] = template
 	}
 	for _, template := range s.nameAlgoTemplateMap {
@@ -77,7 +78,8 @@ func (s *AlgoEngine) tickHandler() func(e event.Event) {
 		tick := e.EventData.(Tick)
 		templates := s.symbolAlgoTemplateMap[tick.Symbol]
 		for _, template := range templates {
-			s.nameAlgoTemplateMap[template.algoName].updateTick(tick)
+			algoTemplate := s.nameAlgoTemplateMap[template]
+			algoTemplate.updateTick(tick)
 		}
 	}
 }
@@ -111,4 +113,19 @@ func (s *AlgoEngine) orderHandler() func(e event.Event) {
 			template.updateOrder(order)
 		}
 	}
+}
+
+func (s *AlgoEngine) Subscribe(subName string, symbol string) error {
+	if !Exist(subName) {
+		return errors.Errorf("不存在的模板[%s]", subName)
+	}
+	if util.IsBlank(symbol) {
+		return errors.Errorf("订阅symbol不能为空")
+	}
+	//TODO 检查支持该币种
+	templates := s.symbolAlgoTemplateMap[symbol]
+	algoTemplates := append(templates, subName)
+	s.symbolAlgoTemplateMap[symbol] = algoTemplates
+
+	return s.mainEngine.Subscribe(DefaultGatewayName, symbol)
 }

@@ -6,7 +6,7 @@ server:
   port: '8000'
 logger:
   level: debug
-  path: '/Users/fuwei20/01space/01git/leopard-quant/logs'
+  path: '/Users/pleuvoir/dev/space/git/leopard-quant/logs'
   filename: leopard-quant
   maxAge: 1440h
   rotationTime: 24h

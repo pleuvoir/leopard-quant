@@ -2,7 +2,9 @@ package engine
 
 import (
 	"github.com/gookit/color"
+	"github.com/pkg/errors"
 	"leopard-quant/core/event"
+	"leopard-quant/gateway/okx"
 	"sync"
 	"time"
 )
@@ -41,7 +43,7 @@ func (m *MainEngine) InitEngines() {
 
 // 加载网关引擎
 func (m *MainEngine) loadGateway() {
-	m.AddGateway(NewGateway("mock", m.eventEngine))
+	m.AddGateway(NewGateway("okx", m.eventEngine, &okx.Default))
 }
 
 // RegisterListener 注册事件
@@ -126,4 +128,13 @@ func (m *MainEngine) GetAllGateway() (engines []Engineer) {
 		engines = append(engines, engine)
 	}
 	return engines
+}
+
+// Subscribe 订阅币种
+func (m *MainEngine) Subscribe(gatewayName string, symbol string) error {
+	g, ok := m.gatewayMap.Load(gatewayName)
+	if !ok {
+		return errors.Errorf("未找到该网关，gatewayName=%s", gatewayName)
+	}
+	return g.(*GatewayEngine).Subscribe(symbol)
 }

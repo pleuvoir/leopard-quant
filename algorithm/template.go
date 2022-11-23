@@ -1,33 +1,31 @@
-package base
+package algorithm
 
 import (
-	"leopard-quant/algorithm/impl"
 	"leopard-quant/core/config"
-	"leopard-quant/core/engine"
 	"leopard-quant/core/engine/model"
 )
 
 type AlgoTemplate struct {
-	sub          impl.TemplateSub
+	engine       *AlgoEngine
+	sub          TemplateSub
 	algoName     string
-	engine       *engine.MainEngine
 	active       bool
 	activeOrders map[string]model.Order
 	ticks        map[string]model.Tick
 	config       config.Loader
-	context      impl.Context
+	context      Context
 }
 
 // NewAlgoTemplate 创建算法模板
 // 可以认为是基类，算法引擎回调的是这个类 sub负责子类逻辑的实现
-func NewAlgoTemplate(engine *engine.MainEngine, sub impl.TemplateSub) *AlgoTemplate {
+func NewAlgoTemplate(engine *AlgoEngine, sub TemplateSub) *AlgoTemplate {
 	t := AlgoTemplate{}
+	t.engine = engine
 	t.sub = sub
 	t.algoName = sub.Name()
-	t.engine = engine
 	t.activeOrders = make(map[string]model.Order)
 	t.ticks = make(map[string]model.Tick)
-	t.context = impl.Context{MainEngine: engine}
+	t.context = Context{Template: &t}
 	return &t
 }
 
@@ -59,13 +57,8 @@ func (t *AlgoTemplate) updateTrade(trade model.Trade) {
 	}
 }
 
-func (t *AlgoTemplate) init() {
-
-}
-
 func (t *AlgoTemplate) start() {
-	context := impl.Context{MainEngine: t.engine}
-	t.sub.OnStart(context)
+	t.sub.OnStart(t.context)
 	t.active = true //注意在后面 否则会接受到事件
 }
 
@@ -80,4 +73,8 @@ func (t *AlgoTemplate) updateTimer() {
 	if t.active {
 		t.sub.OnTimer()
 	}
+}
+
+func (t *AlgoTemplate) Subscribe(symbol string) error {
+	return t.engine.Subscribe(t.algoName, symbol)
 }

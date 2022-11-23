@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gookit/color"
-	. "leopard-quant/algorithm/impl"
 	"leopard-quant/util"
 	"reflect"
 )
@@ -39,4 +38,10 @@ func MakeInstance(subName string) (sub TemplateSub, err error) {
 		return nil, errors.New(fmt.Sprintf("构建该结构体获取到是nil，%s", subName))
 	}
 	return sub, nil
+}
+
+// Exist 是否存在
+func Exist(subName string) bool {
+	_, ok := typeRegistry[subName]
+	return ok
 }
