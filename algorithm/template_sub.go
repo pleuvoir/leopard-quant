@@ -1,19 +1,23 @@
 package algorithm
 
 import (
+	"leopard-quant/core/config"
 	"leopard-quant/core/engine/model"
 )
 
 type TemplateSub interface {
 	OnStart(c Context)
 	OnStop(c Context)
-	OnTimer()
-	OnTrade(trade model.Trade)
-	OnTick(t model.Tick)
-	OnOrder(order model.Order)
+	OnTimer(c Context)
+	OnTrade(c Context, trade model.Trade)
+	OnTick(c Context, t model.Tick)
+	OnOrder(c Context, order model.Order)
 	Name() string
 }
 
 type Context struct {
-	Template *AlgoTemplate
+	config.Loader
+	Subscribe
 }
+
+type Subscribe func(symbol string) error

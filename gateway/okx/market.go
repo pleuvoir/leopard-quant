@@ -44,8 +44,8 @@ func (m *Market) SubscribeTickers(symbol string, callback gateway.TickerCallback
 				color.Redf("read:", err)
 				return
 			}
+			log.Infof("read message %s", message)
 			ticker := convert2Ticker(message)
-			log.Infof("接收到okx回调。%+v", ticker)
 			callback(ticker)
 		}
 	}()

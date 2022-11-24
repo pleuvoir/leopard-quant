@@ -10,3 +10,5 @@ logger:
   filename: leopard-quant
   maxAge: 1440h
   rotationTime: 24h
+algo:
+  configPath: '/Users/pleuvoir/dev/space/git/leopard-quant/build/algo.json'

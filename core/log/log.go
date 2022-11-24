@@ -1,6 +1,7 @@
 package log
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gookit/color"
 	"github.com/lestrrat-go/file-rotatelogs"
@@ -11,6 +12,7 @@ import (
 	"leopard-quant/util"
 	"os"
 	"path"
+	"path/filepath"
 	"time"
 )
 
@@ -209,6 +211,8 @@ func configLocalFilesystemLogger(level string, logPath string, logFileName strin
 		log.Panicf("config local file system logger error. %+v", errors.WithStack(err))
 	}
 
+	log.SetReportCaller(false)
+
 	lfHook := lfshook.NewHook(lfshook.WriterMap{
 		logrus.TraceLevel: writer,
 		logrus.DebugLevel: writer, // 为不同级别设置不同的输出目的
@@ -217,6 +221,29 @@ func configLocalFilesystemLogger(level string, logPath string, logFileName strin
 		logrus.ErrorLevel: writer,
 		logrus.FatalLevel: writer,
 		logrus.PanicLevel: writer,
-	}, &logrus.JSONFormatter{})
+	}, &ResetFormatter{})
 	log.AddHook(lfHook)
+}
+
+type ResetFormatter struct{}
+
+func (m *ResetFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	var b *bytes.Buffer
+	if entry.Buffer != nil {
+		b = entry.Buffer
+	} else {
+		b = &bytes.Buffer{}
+	}
+	timestamp := entry.Time.Format("2006-01-02 15:04:05")
+	var newLog string
+	//HasCaller()为true才会有调用信息
+	if entry.HasCaller() {
+		fName := filepath.Base(entry.Caller.File)
+		newLog = fmt.Sprintf("[%s] [%s] [%s:%d %s] %s\n",
+			timestamp, entry.Level, fName, entry.Caller.Line, entry.Caller.Function, entry.Message)
+	} else {
+		newLog = fmt.Sprintf("[%s] [%s] %s\n", timestamp, entry.Level, entry.Message)
+	}
+	b.WriteString(newLog)
+	return b.Bytes(), nil
 }

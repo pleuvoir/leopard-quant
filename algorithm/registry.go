@@ -12,7 +12,7 @@ var typeRegistry = make(map[string]reflect.Type)
 
 func init() {
 	color.Grayln("开始注册算法")
-	subs := []TemplateSub{&NoopSub{}}
+	subs := []TemplateSub{&NoopSub{}, &Noop2Sub{}}
 	for _, sub := range subs {
 		k := sub.Name()
 		v := util.GetRealType(sub)

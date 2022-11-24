@@ -177,8 +177,13 @@ type Logger struct {
 	RotationTime string `json:"rotationTime" yaml:"rotationTime"`
 }
 
+type Algo struct {
+	ConfigPath string `json:"configPath" yaml:"configPath"`
+}
+
 type EnvironmentConf struct {
 	Database Database `json:"database" yaml:"database"`
 	Server   Server   `json:"server" yaml:"server"`
 	Logger   Logger   `json:"logger" yaml:"logger"`
+	Algo     Algo     `json:"algo" yaml:"algo"`
 }

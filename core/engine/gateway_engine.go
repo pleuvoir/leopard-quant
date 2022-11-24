@@ -5,7 +5,6 @@ import (
 	"github.com/gookit/color"
 	"leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
-	"leopard-quant/core/log"
 	"leopard-quant/gateway"
 	"sync"
 )
@@ -60,8 +59,10 @@ func (g *GatewayEngine) onEvent(eventType event.Type, data any) {
 func (g *GatewayEngine) Connect() error {
 	err := g.sub.Connect()
 	if err != nil {
-		color.Greenln("网关连接成功。")
+		color.Greenln("网关连接失败。%s", err)
+		return err
 	}
+	color.Greenln("网关连接成功。")
 	return err
 }
 
@@ -69,8 +70,7 @@ func (g *GatewayEngine) Connect() error {
 func (g *GatewayEngine) Subscribe(symbol string) error {
 	callback := gateway.ComposeCallback{
 		TickerCallback: func(tick gateway.Ticker) {
-			log.Infof("网关引擎发布事件。")
-			m := model.Tick{Symbol: "STARL-USDT"} //TODO
+			m := model.Tick{Symbol: symbol}
 			g.OnTick(m)
 		},
 		KlineCallback: func(k gateway.Kline) {

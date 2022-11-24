@@ -11,33 +11,32 @@ type NoopSub struct {
 }
 
 func (n *NoopSub) OnStart(c Context) {
-	n.template = c.Template
-	err := n.template.Subscribe("STARL-USDT")
+	symbol := c.GetStrOrDefault("symbol", "BTC-USDT")
+	err := c.Subscribe(symbol)
 	if err != nil {
-		log.Errorf("NoopSub OnStart，订阅STARL-USDT失败，%s ", err)
+		log.Errorf("NoopSub OnStart，订阅%s失败，%s ", symbol, err)
 		panic(err)
 	}
-	log.Infof("NoopSub OnStart，已订阅STARL-USDT")
+	log.Infof("NoopSub OnStart，已订阅 %s", symbol)
 }
 
-func (n *NoopSub) OnTimer() {
+func (n *NoopSub) OnTimer(c Context) {
 	log.Infof("NoopSub OnTimer")
-	time.Sleep(time.Second * 5)
 }
 
 func (n *NoopSub) OnStop(c Context) {
 }
 
-func (n *NoopSub) OnTrade(trade model.Trade) {
+func (n *NoopSub) OnTrade(c Context, trade model.Trade) {
 }
 
-func (n *NoopSub) OnTick(t model.Tick) {
+func (n *NoopSub) OnTick(c Context, t model.Tick) {
 	log.Infof("NoopSub OnTick，%+v", t)
 	time.Sleep(time.Second * 5)
 
 }
 
-func (n *NoopSub) OnOrder(order model.Order) {
+func (n *NoopSub) OnOrder(c Context, order model.Order) {
 }
 
 func (n *NoopSub) Name() string {

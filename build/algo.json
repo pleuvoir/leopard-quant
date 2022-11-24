@@ -1,0 +1,10 @@
+{
+  "noop":{
+    "enable":true,
+    "symbol":"BTC-USDT"
+  },
+  "noop2":{
+    "enable":false,
+    "symbol":"STARL-USDT"
+  }
+}

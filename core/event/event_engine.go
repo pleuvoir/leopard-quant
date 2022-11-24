@@ -80,10 +80,10 @@ func NewEventEngine() *Engine {
 // Process 处理事件
 func (e *Engine) Process(event Event) {
 	eventHandlers := e.HandlersMap[event.EventType]
-	for _, handler := range eventHandlers {
+	for _, handler := range e.CommonHandlers {
 		handler.Process(event)
 	}
-	for _, handler := range e.CommonHandlers {
+	for _, handler := range eventHandlers {
 		handler.Process(event)
 	}
 }

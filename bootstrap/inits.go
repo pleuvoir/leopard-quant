@@ -27,13 +27,13 @@ func Init() {
 	//初始化主引擎
 	initMainEngine()
 	//初始化算法
-	initAlgoEngine()
+	initAlgoEngine(&Global.ApplicationConf)
 	//初始化restful
 	initRestfulEngine(&Global.ApplicationConf)
 }
 
-func initAlgoEngine() {
-	e := algorithm.NewAlgoEngine(Global.MainEngine)
+func initAlgoEngine(app *config.ApplicationConfig) {
+	e := algorithm.NewAlgoEngine(Global.MainEngine, app.Algo)
 	e.Start()
 }
 

@@ -1,12 +1,16 @@
 package algorithm
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
+	"leopard-quant/core/config"
 	"leopard-quant/core/engine"
 	. "leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
 	"leopard-quant/core/log"
 	"leopard-quant/util"
+	"os"
 )
 
 const DefaultAlgoEngineName = "leopard-algo-engine"
@@ -17,27 +21,59 @@ type AlgoEngine struct {
 	name                   string
 	mainEngine             *engine.MainEngine
 	nameAlgoTemplateMap    map[string]*AlgoTemplate //模板名称：模板
+	nameAlgoConfigMap      map[string]config.Loader //模板名称：配置
 	orderIdAlgoTemplateMap map[string]*AlgoTemplate //订单号：模板
 	symbolAlgoTemplateMap  map[string][]string      //币种:[]模板名称
+	configPath             string                   //配置文件路径
 }
 
 // NewAlgoEngine 构建算法引擎
 // 这个类依赖主引擎，因为所有的订单操作都聚合在主引擎中
-func NewAlgoEngine(mainEngine *engine.MainEngine) *AlgoEngine {
+func NewAlgoEngine(mainEngine *engine.MainEngine, algoConfig config.Algo) *AlgoEngine {
 	e := AlgoEngine{name: DefaultAlgoEngineName, mainEngine: mainEngine}
 	e.nameAlgoTemplateMap = map[string]*AlgoTemplate{}
 	e.orderIdAlgoTemplateMap = map[string]*AlgoTemplate{}
 	e.symbolAlgoTemplateMap = map[string][]string{}
+	e.nameAlgoConfigMap = map[string]config.Loader{}
+	e.configPath = algoConfig.ConfigPath
 	e.initEngine()
 	e.registerEvent()
 	return &e
 }
 
 func (s *AlgoEngine) initEngine() {
-	s.loadSetting()
+	algoConfig, err := s.loadAlgoConfig()
+	if err != nil {
+		panic(err)
+	}
+	for subName, items := range algoConfig {
+		s.nameAlgoConfigMap[subName] = config.NewConfigLoader(algoConfigItem{m: items})
+	}
 }
 
-func (s *AlgoEngine) loadSetting() {
+type algoConfigItem struct {
+	m map[string]any
+}
+
+func (algoConfigItem) Load() error {
+	return nil
+}
+
+func (a algoConfigItem) GetStr(key string) string {
+	return fmt.Sprint(a.m[key])
+}
+
+func (s *AlgoEngine) loadAlgoConfig() (m map[string]map[string]any, err error) {
+	c := make(map[string]map[string]any)
+	data, err := os.ReadFile(s.configPath)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, &c)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func (s *AlgoEngine) Name() string {
@@ -45,13 +81,17 @@ func (s *AlgoEngine) Name() string {
 }
 
 func (s *AlgoEngine) Start() {
-	//加载配置，初始所有生效的模板
-	if sub, err := MakeInstance("noop"); err == nil {
-		template := NewAlgoTemplate(s, sub)
-		s.nameAlgoTemplateMap[template.algoName] = template
-	}
-	for _, template := range s.nameAlgoTemplateMap {
-		template.start()
+	for subName, configLoader := range s.nameAlgoConfigMap {
+		enable := configLoader.GetBoolOrDefault("enable", false)
+		if !enable {
+			continue
+		}
+		//加载配置，初始所有生效的模板
+		if sub, err := MakeInstance(subName); err == nil {
+			template := NewAlgoTemplate(s, sub, configLoader)
+			s.nameAlgoTemplateMap[template.algoName] = template
+			template.start()
+		}
 	}
 	log.Info("算法引擎已启动。")
 }
