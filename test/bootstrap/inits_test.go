@@ -10,5 +10,5 @@ func TestInit(t *testing.T) {
 
 	bootstrap.Init()
 
-	time.Sleep(time.Second * 100)
+	time.Sleep(time.Second * 1000)
 }

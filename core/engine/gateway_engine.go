@@ -3,7 +3,7 @@ package engine
 import (
 	"fmt"
 	"github.com/gookit/color"
-	"leopard-quant/core/engine/model"
+	"leopard-quant/common/model"
 	"leopard-quant/core/event"
 	"leopard-quant/gateway"
 	"sync"
@@ -36,16 +36,20 @@ func (g *GatewayEngine) Stop() {
 	color.Redln(fmt.Sprintf("[%s]网关引擎关闭状态", g.Name()))
 }
 
-func (g *GatewayEngine) OnTick(tick model.Tick) {
+func (g *GatewayEngine) OnTick(tick model.Ticker) {
 	g.onEvent(event.Tick, tick)
 }
 
+func (g *GatewayEngine) OnBar(kline model.KLine) {
+	g.onEvent(event.Bar, kline)
+}
+
 func (g *GatewayEngine) OnOrder(order model.Order) {
-	g.onEvent(event.Tick, order)
+	g.onEvent(event.Order, order)
 }
 
 func (g *GatewayEngine) OnTrade(trade model.Trade) {
-	g.onEvent(event.Tick, trade)
+	g.onEvent(event.Trade, trade)
 }
 
 func (g *GatewayEngine) onEvent(eventType event.Type, data any) {
@@ -69,12 +73,11 @@ func (g *GatewayEngine) Connect() error {
 // Subscribe 订阅某币种的所有事件
 func (g *GatewayEngine) Subscribe(symbol string) error {
 	callback := gateway.ComposeCallback{
-		TickerCallback: func(tick gateway.Ticker) {
-			m := model.Tick{Symbol: symbol}
-			g.OnTick(m)
+		TickerCallback: func(tick model.Ticker) {
+			g.OnTick(tick)
 		},
-		KlineCallback: func(k gateway.Kline) {
-
+		KlineCallback: func(k model.KLine) {
+			g.OnBar(k)
 		}}
 	err := g.sub.Connect()
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "noop":{
     "enable":true,
-    "symbol":"BTC-USDT"
+    "symbol":"ETH-USDT"
   },
   "noop2":{
     "enable":false,

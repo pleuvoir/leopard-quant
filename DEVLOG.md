@@ -119,3 +119,8 @@ https://stackoverflow.com/questions/35790935/using-reflection-in-go-to-get-the-n
 
 在事件引擎中使用，暂未进行benchmark
 https://geektutu.com/post/hpg-sync-pool.html
+
+## 对接OK KLINE
+
+//TODO
+重新抽象ws 获取不到kline回调  不能重复readMessage 

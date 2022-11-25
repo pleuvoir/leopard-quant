@@ -1,8 +1,8 @@
 package algorithm
 
 import (
+	"leopard-quant/common/model"
 	"leopard-quant/core/config"
-	"leopard-quant/core/engine/model"
 )
 
 type AlgoTemplate struct {
@@ -11,7 +11,7 @@ type AlgoTemplate struct {
 	algoName     string
 	active       bool
 	activeOrders map[string]model.Order
-	ticks        map[string]model.Tick
+	ticks        map[string]model.Ticker
 	config       config.Loader
 	context      Context
 }
@@ -25,7 +25,7 @@ func NewAlgoTemplate(engine *AlgoEngine, sub TemplateSub, c config.Loader) *Algo
 	t.config = c
 	t.algoName = sub.Name()
 	t.activeOrders = make(map[string]model.Order)
-	t.ticks = make(map[string]model.Tick)
+	t.ticks = make(map[string]model.Ticker)
 
 	//初始化上下文，将一些操作封装在里面，避免子类过度调用模板的方法
 	t.context = Context{Loader: t.config,
@@ -35,7 +35,7 @@ func NewAlgoTemplate(engine *AlgoEngine, sub TemplateSub, c config.Loader) *Algo
 	return &t
 }
 
-func (t *AlgoTemplate) updateTick(tick model.Tick) { //TODO
+func (t *AlgoTemplate) updateTick(tick model.Ticker) { //TODO
 	if t.active {
 		//history, ok := t.ticks[tick.Symbol]
 		//if ok {

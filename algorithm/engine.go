@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
+	. "leopard-quant/common/model"
 	"leopard-quant/core/config"
 	"leopard-quant/core/engine"
-	. "leopard-quant/core/engine/model"
 	"leopard-quant/core/event"
 	"leopard-quant/core/log"
 	"leopard-quant/util"
@@ -37,7 +37,6 @@ func NewAlgoEngine(mainEngine *engine.MainEngine, algoConfig config.Algo) *AlgoE
 	e.nameAlgoConfigMap = map[string]config.Loader{}
 	e.configPath = algoConfig.ConfigPath
 	e.initEngine()
-	e.registerEvent()
 	return &e
 }
 
@@ -93,6 +92,7 @@ func (s *AlgoEngine) Start() {
 			template.start()
 		}
 	}
+	s.registerEvent()
 	log.Info("算法引擎已启动。")
 }
 
@@ -115,7 +115,7 @@ func (s *AlgoEngine) registerEvent() {
 // 对应币种模板会收到回调
 func (s *AlgoEngine) tickHandler() func(e event.Event) {
 	return func(e event.Event) {
-		tick := e.EventData.(Tick)
+		tick := e.EventData.(Ticker)
 		templates := s.symbolAlgoTemplateMap[tick.Symbol]
 		for _, template := range templates {
 			algoTemplate := s.nameAlgoTemplateMap[template]

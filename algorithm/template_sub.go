@@ -1,8 +1,8 @@
 package algorithm
 
 import (
+	"leopard-quant/common/model"
 	"leopard-quant/core/config"
-	"leopard-quant/core/engine/model"
 )
 
 type TemplateSub interface {
@@ -10,7 +10,7 @@ type TemplateSub interface {
 	OnStop(c Context)
 	OnTimer(c Context)
 	OnTrade(c Context, trade model.Trade)
-	OnTick(c Context, t model.Tick)
+	OnTick(c Context, ticker model.Ticker)
 	OnOrder(c Context, order model.Order)
 	Name() string
 }

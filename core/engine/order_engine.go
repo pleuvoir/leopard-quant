@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"leopard-quant/core/engine/model"
+	"leopard-quant/common/model"
 	"leopard-quant/core/event"
 	"leopard-quant/core/log"
 )

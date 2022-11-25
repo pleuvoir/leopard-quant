@@ -180,7 +180,7 @@ func (e *Engine) startConsumer() {
 		over:
 			for e.Active {
 				select {
-				case event, ok := <-eq.ch:
+				case event, ok := <-q.ch:
 					if !ok {
 						color.Redln(fmt.Sprintf("[%d]子事件引擎接收到关闭信号，终止事件监听。", q.t))
 						break over

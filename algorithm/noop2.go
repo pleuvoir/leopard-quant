@@ -1,7 +1,7 @@
 package algorithm
 
 import (
-	"leopard-quant/core/engine/model"
+	"leopard-quant/common/model"
 	"leopard-quant/core/log"
 	"time"
 )
@@ -31,7 +31,7 @@ func (n *Noop2Sub) OnStop(c Context) {
 func (n *Noop2Sub) OnTrade(c Context, trade model.Trade) {
 }
 
-func (n *Noop2Sub) OnTick(c Context, t model.Tick) {
+func (n *Noop2Sub) OnTick(c Context, t model.Ticker) {
 	log.Infof("NoopSub OnTick，%+v", t)
 	time.Sleep(time.Second * 5)
 

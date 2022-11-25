@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gookit/color"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
@@ -29,7 +30,7 @@ func NewWebsocket(scheme string, host string, path string) *Websocket {
 // Connect 连接WebSocket
 func (w *Websocket) Connect() error {
 	u := url.URL{Scheme: w.Scheme, Host: w.Host, Path: w.Path}
-	color.Greenf("connecting to %s", u.String())
+	color.Greenln(fmt.Sprintf("connecting to %s", u.String()))
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		color.Redf("dial:", err)

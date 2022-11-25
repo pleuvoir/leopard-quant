@@ -1,13 +1,12 @@
 package algorithm
 
 import (
-	"leopard-quant/core/engine/model"
+	"leopard-quant/common/model"
 	"leopard-quant/core/log"
-	"time"
 )
 
 type NoopSub struct {
-	template *AlgoTemplate
+	cnt int
 }
 
 func (n *NoopSub) OnStart(c Context) {
@@ -21,8 +20,6 @@ func (n *NoopSub) OnStart(c Context) {
 }
 
 func (n *NoopSub) OnTimer(c Context) {
-	log.Infof("NoopSub OnTimer")
-	time.Sleep(time.Second * 15)
 
 }
 
@@ -32,10 +29,9 @@ func (n *NoopSub) OnStop(c Context) {
 func (n *NoopSub) OnTrade(c Context, trade model.Trade) {
 }
 
-func (n *NoopSub) OnTick(c Context, t model.Tick) {
-	log.Infof("NoopSub OnTick，%+v", t)
-	time.Sleep(time.Second * 5)
-
+func (n *NoopSub) OnTick(c Context, t model.Ticker) {
+	n.cnt = n.cnt + 1
+	log.Infof("NoopSub OnTick，%+v cnt=%d", t, n.cnt)
 }
 
 func (n *NoopSub) OnOrder(c Context, order model.Order) {
