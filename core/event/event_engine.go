@@ -1,6 +1,7 @@
 package event
 
 import (
+	"fmt"
 	"github.com/gookit/color"
 	"sync"
 	"time"
@@ -27,15 +28,13 @@ const (
 // Engine 事件引擎
 type Engine struct {
 	Active         bool
-	TimerActive    bool
 	TimeDuration   time.Duration
 	HandlersMap    map[Type][]eventListener
 	CommonHandlers []eventListener
-	EventChan      chan Event
 	TimerEventChan chan Event
 	stopChan       chan struct{}
-	startMutex     sync.Mutex
 	registerMutex  sync.Mutex
+	queues         map[Type]*eventQueue
 }
 
 // 事件处理器
@@ -62,17 +61,39 @@ func NewEvent(eventType Type, data any) Event {
 	return Event{eventType, data}
 }
 
+// 每个事件使用单独的队列
+type eventQueue struct {
+	ch chan Event
+	t  Type
+}
+
+func (q *eventQueue) shutdown() {
+	close(q.ch)
+}
+
+func (q *eventQueue) send(e Event) {
+	q.ch <- e
+}
+
+func newEventQueue(t Type) *eventQueue {
+	cacheCh := 1000 //如果没人处理（消费者未启动）也发
+	return &eventQueue{ch: make(chan Event, cacheCh), t: t}
+}
+
 // NewEventEngine 创建引擎
 func NewEventEngine() *Engine {
 	engine := Engine{
 		Active:         false,
-		TimerActive:    false,
 		TimeDuration:   time.Second,
 		HandlersMap:    map[Type][]eventListener{},
 		CommonHandlers: []eventListener{},
-		EventChan:      make(chan Event, 1000),
 		TimerEventChan: make(chan Event, 1000),
 		stopChan:       make(chan struct{}),
+		queues:         map[Type]*eventQueue{},
+	}
+	types := []Type{Log, Tick, Bar, Trade, Order, Asset, Position, Contract, Account, Algo, Error}
+	for _, t := range types {
+		engine.queues[t] = newEventQueue(t)
 	}
 	return &engine
 }
@@ -120,102 +141,107 @@ func (e *Engine) UnRegister(eventType Type, handler eventListener) {
 
 // StopAll 停止所有
 func (e *Engine) StopAll() {
-	e.StopEventConsumer()
-	e.StopSchedulerTimer()
-}
-
-// StopSchedulerTimer 停止周期引擎
-func (e *Engine) StopSchedulerTimer() {
-	e.startMutex.Lock()
-	defer e.startMutex.Unlock()
-	if e.TimerActive {
-		e.stopChan <- struct{}{}
+	if !e.Active {
+		return
 	}
+	e.stopConsumer()
+	e.stopTimer()
 }
 
-// StopEventConsumer 停止普通事件引擎
-func (e *Engine) StopEventConsumer() {
-	e.startMutex.Lock()
-	defer e.startMutex.Unlock()
+// 停止周期引擎
+func (e *Engine) stopTimer() {
+	e.stopChan <- struct{}{}
+}
+
+// 停止普通事件引擎
+func (e *Engine) stopConsumer() {
 	if e.Active {
 		e.Active = false
-		close(e.EventChan)
+		for _, e := range e.queues {
+			e.shutdown()
+		}
 	}
 }
 
 // StartAll 启动所有
 func (e *Engine) StartAll() {
-	e.StartSchedulerTimer()
-	e.StartConsumer()
-}
-
-// StartConsumer 消费消息  普通消息和定时器消息分开处理
-func (e *Engine) StartConsumer() {
-	e.startMutex.Lock()
-	defer e.startMutex.Unlock()
 	if e.Active {
 		return
 	}
-	go func() {
-	over:
-		for e.Active {
-			select {
-			case event, ok := <-e.EventChan:
-				if !ok {
-					color.Redln("事件引擎关闭状态，普通消息消费已终止，丢弃事件。")
-					break over
+	e.Active = true
+	e.startTimer()
+	e.startConsumer()
+}
+
+// 消费消息
+func (e *Engine) startConsumer() {
+	for _, eq := range e.queues {
+		go func(q *eventQueue) {
+		over:
+			for e.Active {
+				select {
+				case event, ok := <-eq.ch:
+					if !ok {
+						color.Redln(fmt.Sprintf("[%d]子事件引擎接收到关闭信号，终止事件监听。", q.t))
+						break over
+					}
+					e.Process(event)
 				}
-				e.Process(event)
 			}
-		}
-	}()
+		}(eq)
+	}
+	color.Greenln("事件引擎子事件引擎已全部启动。")
+}
+
+func (e *Engine) startTimer() {
+	e.startTimerProducer()
+	e.startTimerConsumer()
+}
+
+// 启动定时器消费者
+func (e *Engine) startTimerConsumer() {
 	go func() {
-	over:
-		for e.TimerActive {
+	outer:
+		for {
 			select {
 			case event, ok := <-e.TimerEventChan:
 				if !ok {
-					color.Redln("事件引擎关闭状态，定时器已终止，丢弃事件。", event)
-					break over
+					color.Redln("事件引擎定时器消费者接收到关闭信号，已终止事件监听。")
+					break outer
 				}
 				e.Process(event)
 			}
 		}
 	}()
-	e.Active = true
-	color.Greenln("事件引擎已启动，普通消息已启动。")
+	color.Greenln("事件引擎定时发布消费者已启动。")
 }
 
-// StartSchedulerTimer 启动定时器，周期执行
-func (e *Engine) StartSchedulerTimer() {
-	e.startMutex.Lock()
-	defer e.startMutex.Unlock()
-	if e.TimerActive {
-		return
-	}
+// 启动定时器生产者，周期执行
+func (e *Engine) startTimerProducer() {
 	go func() {
 		newEvent := NewEvent(Timer, nil)
 		ticker := time.NewTicker(e.TimeDuration)
 		defer ticker.Stop()
-		for e.TimerActive {
+	outer:
+		for {
 			select {
 			case <-ticker.C:
 				e.TimerEventChan <- newEvent
 			case <-e.stopChan:
-				e.TimerActive = false
-				color.Redln("事件引擎关闭状态，定时器已终止，丢弃事件。")
+				close(e.TimerEventChan)
+				color.Redln("事件引擎定时发布生产者接收到关闭信号，定时器已终止，不再发布时间事件。")
+				break outer
 			}
 		}
 	}()
-	e.TimerActive = true
-	color.Greenln("事件引擎已启动，定时器已启动。")
+	color.Greenln("事件引擎定时发布生产者已启动。")
 }
 
-// Put 发布事件
+// Put 发布事件，因为管道自带阻塞特性，为避免满后阻塞，因此没有消费者时不让发布
 func (e *Engine) Put(event Event) {
 	if e.Active {
-		e.EventChan <- event
+		e.queues[event.EventType].send(event)
 	} else {
-		color.Redln("事件引擎关闭状态，丢弃事件。", event)
+		color.Redln(fmt.Sprintf("事件引擎处于关闭状态，丢弃事件发布。%+v", event))
 	}
 }

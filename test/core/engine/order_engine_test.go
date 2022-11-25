@@ -17,7 +17,7 @@ func TestOrder(t *testing.T) {
 	mainEngine.Start()
 
 	//eventEngine := mainEngine.eventEngine
-	////eventEngine.StopSchedulerTimer()
+	////eventEngine.StopTimer()
 	//
 	//for _, listeners := range eventEngine.HandlersMap {
 	//	t.Log(listeners)

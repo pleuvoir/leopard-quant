@@ -21,6 +21,8 @@ func (n *Noop2Sub) OnStart(c Context) {
 
 func (n *Noop2Sub) OnTimer(c Context) {
 	log.Infof("NoopSub2 OnTimer")
+	time.Sleep(time.Second * 15)
+
 }
 
 func (n *Noop2Sub) OnStop(c Context) {

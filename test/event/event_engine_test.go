@@ -16,11 +16,11 @@ func (TimerEventHandler) Process(event event.Event) {
 type LogEventHandler struct{}
 
 func (LogEventHandler) Process(event event.Event) {
-	fmt.Printf("LogEventHandler receive event %+v \n", event)
+	fmt.Printf("LogEventHandler receive event %+v  %s \n", event, time.Now())
 }
 
 func Process(event event.Event) {
-	fmt.Printf("LogEventHandler receive event %+v \n", event)
+	fmt.Printf("LogEventHandler receive event %+v  %s \n", event, time.Now())
 }
 
 func TestHandlerFuncWithReceiver(t *testing.T) {
@@ -29,7 +29,7 @@ func TestHandlerFuncWithReceiver(t *testing.T) {
 
 	engine.Put(event.NewEvent(event.Log, "i am log."))
 
-	engine.StartConsumer()
+	engine.StartAll()
 
 	engine.Put(event.NewEvent(event.Log, "i am log2."))
 
@@ -43,11 +43,13 @@ func TestHandlerFunc(t *testing.T) {
 
 	engine.Put(event.NewEvent(event.Log, "i am log."))
 
-	engine.StartConsumer()
+	engine.StartAll()
 
 	engine.Put(event.NewEvent(event.Log, "i am log2."))
 
 	time.Sleep(5 * time.Second)
+
+	engine.StopAll()
 
 }
 
@@ -62,20 +64,19 @@ func TestNewEventEngine(t *testing.T) {
 	logEvent := event.NewEvent(event.Log, "i am log.")
 	engine.Put(logEvent) //事件引擎关闭状态，丢弃事件。 {2 i am log.}
 
-	engine.StartConsumer()
-
-	engine.StartSchedulerTimer()
+	engine.StartAll()
 
 	time.Sleep(3 * time.Second)
 
-	//engine.UnRegister(timerEventHandler)
+	engine.UnRegister(event.Timer, timerEventHandler)
+	time.Sleep(3 * time.Second)
 
-	engine.Put(logEvent) //
+	//	engine.Put(logEvent) //
 
-	engine.StopAll()
+	//	engine.StopAll()
 
-	//engine.StopEventConsumer()
-	//engine.StopSchedulerTimer()
+	//engine.stopEventConsumer()
+	//engine.StopTimer()
 
 	engine.Put(logEvent)
 
