@@ -16,7 +16,7 @@ func TestSubscribe(t *testing.T) {
 		return
 	}
 
-	callback := gateway.ComposeCallback{
+	callback := gateway.ApiCallback{
 		TickerCallback: func(tick gateway.Ticker) {
 			t.Logf("%+v", tick)
 		},

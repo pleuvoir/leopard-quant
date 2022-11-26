@@ -72,7 +72,7 @@ func (g *GatewayEngine) Connect() error {
 
 // Subscribe 订阅某币种的所有事件
 func (g *GatewayEngine) Subscribe(symbol string) error {
-	callback := gateway.ComposeCallback{
+	callback := gateway.ApiCallback{
 		TickerCallback: func(tick model.Ticker) {
 			g.OnTick(tick)
 		},
@@ -94,6 +94,6 @@ func (g *GatewayEngine) CancelSubscribe(symbol string) error {
 
 type GatewaySub interface {
 	Connect() error
-	Subscribe(symbol string, c gateway.ComposeCallback) error
+	Subscribe(symbol string, c gateway.ApiCallback) error
 	CancelSubscribe(symbol string) error
 }

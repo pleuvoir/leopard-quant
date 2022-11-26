@@ -1,0 +1,3 @@
+addr:          "wss://ws.okx.com:8443/ws/v5/public"
+auto-reconnect: true
+debug-mode:     false

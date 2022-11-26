@@ -26,7 +26,7 @@ func (m *Market) Connect() error {
 	return m.ws.Connect()
 }
 
-func (m *Market) Subscribe(symbol string, c gateway.ComposeCallback) (err error) {
+func (m *Market) Subscribe(symbol string, c gateway.ApiCallback) (err error) {
 	//if err = m.SubscribeTickers(symbol, c.TickerCallback); err != nil {
 	//	return err
 	//}

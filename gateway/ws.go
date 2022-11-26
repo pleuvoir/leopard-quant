@@ -42,10 +42,10 @@ type WS struct {
 	mu            sync.RWMutex
 	Ended         bool
 	subscribeCmds []Cmd
-	callbacks     ComposeCallback
+	callbacks     ApiCallback
 }
 
-func New(config *Configuration, callbacks ComposeCallback) *WS {
+func New(config *Configuration, callbacks ApiCallback) *WS {
 	b := &WS{
 		cfg:       config,
 		callbacks: callbacks,
@@ -175,7 +175,7 @@ func (b *WS) IsConnected() bool {
 	return b.conn.IsConnected()
 }
 
-func processMessagePipeline(data []byte, callback ComposeCallback) {
+func processMessagePipeline(data []byte, callback ApiCallback) {
 
 }
 
@@ -207,9 +207,9 @@ func (b *WS) processMessage(messageType int, data []byte) {
 		if b.cfg.DebugMode {
 			color.Greenln(fmt.Sprintf("ticker data -> %s", raw))
 		}
-		if ticker, err := b.callbacks.TickerCallbackConverter(data, ret); err == nil {
-			b.callbacks.TickerCallback(ticker)
-		}
+		//if ticker, err := b.callbacks.TickerCallbackConverter(data, ret); err == nil {
+		//	b.callbacks.TickerCallback(ticker)
+		//}
 		return
 	}
 

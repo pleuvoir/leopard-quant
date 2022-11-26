@@ -16,11 +16,11 @@ func TestWs(t *testing.T) {
 		DebugMode:     false,
 	}
 
-	callback := gateway.ComposeCallback{
+	callback := gateway.ApiCallback{
 		TickerCallback: func(ticker model.Ticker) {
 			fmt.Println(ticker)
 		},
-		TickerCallbackConverter: convert2Ticker,
+		//TickerCallbackConverter: convert2Ticker,
 	}
 
 	b := gateway.New(cfg, callback)
