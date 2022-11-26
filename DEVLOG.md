@@ -124,3 +124,5 @@ https://geektutu.com/post/hpg-sync-pool.html
 
 //TODO
 重新抽象ws 获取不到kline回调  不能重复readMessage 
+
+gjson一个根据路径获取json值的库，类似于jsonObject
