@@ -60,16 +60,6 @@ func (g *GatewayEngine) onEvent(eventType event.Type, data any) {
 	g.eventPool.Put(e)
 }
 
-func (g *GatewayEngine) Connect() error {
-	err := g.sub.Connect()
-	if err != nil {
-		color.Greenln("网关连接失败。%s", err)
-		return err
-	}
-	color.Greenln("网关连接成功。")
-	return err
-}
-
 // Subscribe 订阅某币种的所有事件
 func (g *GatewayEngine) Subscribe(symbol string) error {
 	callback := gateway.ApiCallback{
@@ -79,11 +69,6 @@ func (g *GatewayEngine) Subscribe(symbol string) error {
 		KlineCallback: func(k model.KLine) {
 			g.OnBar(k)
 		}}
-	err := g.sub.Connect()
-	if err != nil {
-		color.Errorf("网关连接失败。")
-		return err
-	}
 	return g.sub.Subscribe(symbol, callback)
 }
 
@@ -93,7 +78,6 @@ func (g *GatewayEngine) CancelSubscribe(symbol string) error {
 }
 
 type GatewaySub interface {
-	Connect() error
 	Subscribe(symbol string, c gateway.ApiCallback) error
 	CancelSubscribe(symbol string) error
 }

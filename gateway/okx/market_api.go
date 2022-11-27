@@ -6,25 +6,25 @@ import (
 	"fmt"
 	"github.com/gookit/color"
 	"github.com/gorilla/websocket"
-	"github.com/tidwall/gjson"
+	"leopard-quant/core/event"
 	"leopard-quant/gateway"
 	"leopard-quant/util/recws"
 	"time"
 )
 
 type MarketApi struct {
-	UnmarshalerOptions *gateway.UnmarshalerOptions
+	unmarshalerOptions *gateway.UnmarshalerOptions
 	apiOptions         *gateway.ApiOptions
 	conn               *recws.RecConn
-	Ended              bool
 	callback           gateway.ApiCallback
 	subscribeCmd       []Cmd
+	eventEngine        *event.Engine
 }
 
-func NewMarket(callback gateway.ApiCallback) *MarketApi {
+func NewMarket(baseApi *gateway.BaseApi, callback gateway.ApiCallback) *MarketApi {
 	m := &MarketApi{}
-	m.UnmarshalerOptions = BaseApi.UnmarshalerOptions
-	m.apiOptions = BaseApi.ApiOptions
+	m.unmarshalerOptions = baseApi.UnmarshalerOptions
+	m.apiOptions = baseApi.ApiOptions
 	m.callback = callback
 	m.conn = &recws.RecConn{
 		KeepAliveTimeout: 60 * time.Second,
@@ -42,10 +42,10 @@ type Cmd struct {
 	Args []ArgItem `json:"args"`
 }
 
-//type ArgItem struct {
-//	Channel string `json:"channel"`
-//	InstId  string `json:"instId"`
-//}
+type ArgItem struct {
+	Channel string `json:"channel"`
+	InstId  string `json:"instId"`
+}
 
 func (m *MarketApi) Subscribe(item ArgItem) {
 	cmd := Cmd{
@@ -98,8 +98,8 @@ func (m *MarketApi) Start() error {
 			_, data, err := m.conn.ReadMessage()
 			if err != nil {
 				color.Redln(fmt.Sprintf("Ws Read error, closing connection: %v", err))
-				m.conn.Close()
-				m.Ended = true
+				//	m.conn.Close()
+				time.Sleep(time.Second * 3)
 				return
 			}
 			m.processMessagePipeline(data)
@@ -116,23 +116,34 @@ func (m *MarketApi) processMessagePipeline(data []byte) {
 		color.Greenln(fmt.Sprintf("Ws %v", s))
 	}
 
-	if s == "pong" {
+	if match, _ := m.unmarshalerOptions.SubscribeResponseUnmarshaler(data); match {
 		if debugMode {
-			color.Greenln("应答pong，忽略。")
+			color.Greenln(fmt.Sprintf("订阅应答 %s", s))
 		}
 		return
 	}
 
-	ret := gjson.ParseBytes(data)
-
-	if eventValue := ret.Get("event"); eventValue.Exists() {
+	if match, _ := m.unmarshalerOptions.PongResponseUnmarshaler(data); match {
 		if debugMode {
-			color.Greenln("订阅应答，忽略。")
+			color.Greenln(fmt.Sprintf("心跳应答 %s", s))
 		}
 		return
 	}
-	if ticker, err := m.UnmarshalerOptions.GetTickerResponseUnmarshaler(data); err == nil {
+
+	if match, ticker, _ := m.unmarshalerOptions.GetTickerResponseUnmarshaler(data); match {
+		if debugMode {
+			color.Greenln(fmt.Sprintf("TickerCallback %s", s))
+		}
 		m.callback.TickerCallback(ticker)
+		return
+	}
+
+	if match, kLine, _ := m.unmarshalerOptions.GetKlineResponseUnmarshaler(data); match {
+		if debugMode {
+			color.Greenln(fmt.Sprintf("KlineCallback %s", s))
+		}
+		m.callback.KlineCallback(kLine)
+		return
 	}
 
 }

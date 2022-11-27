@@ -1,9 +1,10 @@
-package algorithm
+package base
 
 import (
 	"errors"
 	"fmt"
 	"github.com/gookit/color"
+	"leopard-quant/algorithm"
 	"leopard-quant/util"
 	"reflect"
 )
@@ -12,7 +13,7 @@ var typeRegistry = make(map[string]reflect.Type)
 
 func init() {
 	color.Grayln("开始注册算法")
-	subs := []TemplateSub{&NoopSub{}, &Noop2Sub{}}
+	subs := []algorithm.TemplateSub{&algorithm.NoopSub{}, &algorithm.Noop2Sub{}}
 	for _, sub := range subs {
 		k := sub.Name()
 		v := util.GetRealType(sub)
@@ -25,12 +26,12 @@ func init() {
 	color.Grayln("算法注册完成")
 }
 
-func MakeInstance(subName string) (sub TemplateSub, err error) {
+func MakeInstance(subName string) (sub algorithm.TemplateSub, err error) {
 	r, ok := typeRegistry[subName]
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("注册表未找到该算法，%s", subName))
 	}
-	sub, ok = util.MakeInstance(r).(TemplateSub)
+	sub, ok = util.MakeInstance(r).(algorithm.TemplateSub)
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("该结构体不是algorithm.TemplateSub的实现，%s", subName))
 	}

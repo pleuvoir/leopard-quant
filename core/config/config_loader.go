@@ -186,4 +186,13 @@ type EnvironmentConf struct {
 	Server   Server   `json:"server" yaml:"server"`
 	Logger   Logger   `json:"logger" yaml:"logger"`
 	Algo     Algo     `json:"algo" yaml:"algo"`
+	Main     Main     `json:"main" yaml:"main"`
+}
+
+type Main struct {
+	Gateway Gateway `json:"gateway" yaml:"gateway"`
+}
+
+type Gateway struct {
+	ConfigPath string `json:"configPath" yaml:"configPath"`
 }

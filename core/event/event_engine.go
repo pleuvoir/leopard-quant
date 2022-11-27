@@ -3,6 +3,7 @@ package event
 import (
 	"fmt"
 	"github.com/gookit/color"
+	"github.com/panjf2000/ants"
 	"sync"
 	"time"
 )
@@ -63,12 +64,16 @@ func NewEvent(eventType Type, data any) Event {
 
 // 每个事件使用单独的队列
 type eventQueue struct {
-	ch chan Event
-	t  Type
+	ch   chan Event
+	t    Type
+	pool *ants.Pool
 }
 
 func (q *eventQueue) shutdown() {
-	close(q.ch)
+	defer func() {
+		close(q.ch)
+		_ = q.pool.Release()
+	}()
 }
 
 func (q *eventQueue) send(e Event) {
@@ -76,8 +81,8 @@ func (q *eventQueue) send(e Event) {
 }
 
 func newEventQueue(t Type) *eventQueue {
-	cacheCh := 1000 //如果没人处理（消费者未启动）也发
-	return &eventQueue{ch: make(chan Event, cacheCh), t: t}
+	pool, _ := ants.NewPool(28) //可以控制有多少协程并发处理任务，因为任务是异步的，因此这个管道大小也无意义
+	return &eventQueue{ch: make(chan Event), t: t, pool: pool}
 }
 
 // NewEventEngine 创建引擎
@@ -185,7 +190,12 @@ func (e *Engine) startConsumer() {
 						color.Redln(fmt.Sprintf("[%d]子事件引擎接收到关闭信号，终止事件监听。", q.t))
 						break over
 					}
-					e.Process(event)
+					err := q.pool.Submit(func() {
+						e.Process(event)
+					})
+					if err != nil {
+						color.Redln(fmt.Sprintf("[%d]子事件引擎在协程池中处理任务失败。err=%s", q.t, err))
+					}
 				}
 			}
 		}(eq)

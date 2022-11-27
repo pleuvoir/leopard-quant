@@ -14,7 +14,7 @@ func TestMarketApi(t *testing.T) {
 			fmt.Println(ticker)
 		},
 	}
-	marketApi := NewMarket(callback)
+	marketApi := NewMarket(nil, callback)
 
 	if err := marketApi.Start(); err != nil {
 		panic(err)

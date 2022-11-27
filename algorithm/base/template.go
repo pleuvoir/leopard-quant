@@ -1,24 +1,25 @@
-package algorithm
+package base
 
 import (
+	"leopard-quant/algorithm"
 	"leopard-quant/common/model"
 	"leopard-quant/core/config"
 )
 
 type AlgoTemplate struct {
 	engine       *AlgoEngine
-	sub          TemplateSub
+	sub          algorithm.TemplateSub
 	algoName     string
 	active       bool
 	activeOrders map[string]model.Order
 	ticks        map[string]model.Ticker
 	config       config.Loader
-	context      Context
+	context      algorithm.Context
 }
 
 // NewAlgoTemplate 创建算法模板
 // 可以认为是基类，算法引擎回调的是这个类 sub负责子类逻辑的实现
-func NewAlgoTemplate(engine *AlgoEngine, sub TemplateSub, c config.Loader) *AlgoTemplate {
+func NewAlgoTemplate(engine *AlgoEngine, sub algorithm.TemplateSub, c config.Loader) *AlgoTemplate {
 	t := AlgoTemplate{}
 	t.engine = engine
 	t.sub = sub
@@ -28,7 +29,7 @@ func NewAlgoTemplate(engine *AlgoEngine, sub TemplateSub, c config.Loader) *Algo
 	t.ticks = make(map[string]model.Ticker)
 
 	//初始化上下文，将一些操作封装在里面，避免子类过度调用模板的方法
-	t.context = Context{Loader: t.config,
+	t.context = algorithm.Context{Loader: t.config,
 		Subscribe: func(symbol string) error {
 			return t.Subscribe(symbol)
 		}}

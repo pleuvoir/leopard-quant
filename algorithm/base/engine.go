@@ -1,4 +1,4 @@
-package algorithm
+package base
 
 import (
 	"encoding/json"

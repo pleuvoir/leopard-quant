@@ -126,3 +126,14 @@ https://geektutu.com/post/hpg-sync-pool.html
 重新抽象ws 获取不到kline回调  不能重复readMessage 
 
 gjson一个根据路径获取json值的库，类似于jsonObject
+
+
+
+## 	协程池 ants.Pool 限制回调异步任务的创建
+
+在执行处理器时，已经按照事件类型区分了管道，但是一个管道中有阻塞任务 还是会影响别人，因此在处理的时候  启动新协程，完全变成异步。
+问题是协程会创建比较多，因此使用协程池限制创建的数量
+
+
+## toml 格式文件解析
+

@@ -3,6 +3,7 @@ package engine
 import (
 	"github.com/gookit/color"
 	"github.com/pkg/errors"
+	"leopard-quant/core/config"
 	"leopard-quant/core/event"
 	"leopard-quant/gateway/okx"
 	"sync"
@@ -18,19 +19,21 @@ type Engineer interface {
 const DefaultMainEngineName = "leopard-main-engine"
 
 type MainEngine struct {
-	TodayDate   string
-	eventEngine *event.Engine
-	engineMap   sync.Map //[string]Engineer 引擎合集
-	gatewayMap  sync.Map //[string]Gateway 网关合集
+	TodayDate     string
+	eventEngine   *event.Engine
+	engineMap     sync.Map       //[string]Engineer 引擎合集
+	gatewayMap    sync.Map       //[string]Gateway 网关合集
+	gatewayConfig config.Gateway //网关配置
 }
 
 // NewMainEngine 构建主引擎
-func NewMainEngine(eventEngine *event.Engine) *MainEngine {
+func NewMainEngine(eventEngine *event.Engine, config config.Main) *MainEngine {
 	mainEngine := MainEngine{}
 	mainEngine.TodayDate = time.Now().Format("2006-01-02")
 	mainEngine.eventEngine = eventEngine
 	mainEngine.engineMap = sync.Map{}
 	mainEngine.gatewayMap = sync.Map{}
+	mainEngine.gatewayConfig = config.Gateway
 	return &mainEngine
 }
 
@@ -43,7 +46,8 @@ func (m *MainEngine) InitEngines() {
 
 // 加载网关引擎
 func (m *MainEngine) loadGateway() {
-	m.AddGateway(NewGateway("okx", m.eventEngine, &okx.Default))
+	//TODO 这里应该将每个交易所分开
+	m.AddGateway(NewGateway("okx", m.eventEngine, okx.New(m.gatewayConfig.ConfigPath)))
 }
 
 // RegisterListener 注册事件

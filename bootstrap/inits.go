@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"github.com/gin-gonic/gin"
-	"leopard-quant/algorithm"
+	"leopard-quant/algorithm/base"
 	"leopard-quant/core/config"
 	"leopard-quant/core/engine"
 	"leopard-quant/core/event"
@@ -25,7 +25,7 @@ func Init() {
 	//初始化日志
 	initLog(&Global.ApplicationConf)
 	//初始化主引擎
-	initMainEngine()
+	initMainEngine(&Global.ApplicationConf)
 	//初始化算法
 	initAlgoEngine(&Global.ApplicationConf)
 	//初始化restful
@@ -33,12 +33,12 @@ func Init() {
 }
 
 func initAlgoEngine(app *config.ApplicationConfig) {
-	e := algorithm.NewAlgoEngine(Global.MainEngine, app.Algo)
+	e := base.NewAlgoEngine(Global.MainEngine, app.Algo)
 	e.Start()
 }
 
-func initMainEngine() {
-	mainEngine := engine.NewMainEngine(event.NewEventEngine())
+func initMainEngine(app *config.ApplicationConfig) {
+	mainEngine := engine.NewMainEngine(event.NewEventEngine(), app.Main)
 	mainEngine.InitEngines()
 	mainEngine.Start()
 	Global.MainEngine = mainEngine
