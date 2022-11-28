@@ -112,7 +112,7 @@ func (s *AlgoEngine) registerEvent() {
 	mainEngine.RegisterListener(event.Order, s.orderHandler())
 }
 
-// 对应币种模板会收到回调
+// 对应币种模板会收到回调，同一个币种的模板会遍历执行
 func (s *AlgoEngine) tickHandler() func(e event.Event) {
 	return func(e event.Event) {
 		tick := e.EventData.(Ticker)
