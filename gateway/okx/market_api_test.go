@@ -1,27 +1,29 @@
 package okx
 
 import (
-	"fmt"
 	"leopard-quant/common/model"
 	"leopard-quant/gateway"
 	"testing"
+	"time"
 )
 
 func TestMarketApi(t *testing.T) {
+	okx := New("/Users/pleuvoir/dev/space/git/leopard-quant/build/gateway.yml")
 
 	callback := gateway.ApiCallback{
 		TickerCallback: func(ticker model.Ticker) {
-			fmt.Println(ticker)
+			t.Log(ticker)
+		},
+		KlineCallback: func(line model.KLine) {
+			t.Log(line)
 		},
 	}
-	marketApi := NewMarket(nil, callback)
 
-	if err := marketApi.Start(); err != nil {
+	if err := okx.Subscribe("BTC-USDT", callback); err != nil {
 		panic(err)
 	}
 
-	marketApi.Subscribe(ArgItem{Channel: "tickers", InstId: "BTC-USDT"})
+	time.Sleep(time.Second * 5)
 
-	forever := make(chan struct{})
-	<-forever
+	<-make(chan struct{})
 }

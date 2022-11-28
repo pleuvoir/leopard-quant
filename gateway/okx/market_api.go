@@ -56,6 +56,15 @@ func (m *MarketApi) Subscribe(item ArgItem) {
 	_ = m.SendCmd(cmd)
 }
 
+func (m *MarketApi) UnSubscribe(item ArgItem) {
+	cmd := Cmd{
+		Op:   "unsubscribe",
+		Args: []ArgItem{item},
+	}
+	m.subscribeCmd = append(m.subscribeCmd, cmd)
+	_ = m.SendCmd(cmd)
+}
+
 func (m *MarketApi) SendCmd(cmd Cmd) error {
 	data, err := json.Marshal(cmd)
 	if err != nil {

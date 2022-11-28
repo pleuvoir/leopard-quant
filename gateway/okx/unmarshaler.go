@@ -4,6 +4,7 @@ import (
 	"github.com/tidwall/gjson"
 	"leopard-quant/common/model"
 	"leopard-quant/util/cast"
+	"strings"
 )
 
 func GetTickerResponseUnmarshaler(data []byte) (match bool, ticker model.Ticker, err error) {
@@ -31,6 +32,20 @@ func GetTickerResponseUnmarshaler(data []byte) (match bool, ticker model.Ticker,
 }
 
 func GetKlineResponseUnmarshaler(data []byte) (match bool, kLine model.KLine, err error) {
+	r := gjson.ParseBytes(data)
+	if channelType := r.Get("arg.channel"); channelType.Exists() && strings.HasPrefix(channelType.Str, "candle") {
+		v := r.Get("data").Array()[0].Array()
+
+		kLine.Ts = cast.ToUint64(v[0].Str)
+		kLine.Open = cast.ToFloat64(v[1].Str)
+		kLine.Highest = cast.ToFloat64(v[2].Str)
+		kLine.Lowest = cast.ToFloat64(v[3].Str)
+		kLine.Close = cast.ToFloat64(v[4].Str)
+		kLine.Vol = cast.ToFloat64(v[5].Str)
+		kLine.VolCcy = cast.ToFloat64(v[6].Str)
+		kLine.VolCcyQuote = cast.ToFloat64(v[7].Str)
+		return true, kLine, nil
+	}
 	return false, kLine, nil
 }
 

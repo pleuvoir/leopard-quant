@@ -29,3 +29,12 @@ type TemplateSub interface {
 
 ![eventEngine](https://github.com/pleuvoir/leopard-quant/raw/master/docs/eventEngine.png)
 
+
+### 网关引擎
+
+负责以一套`API`对接多个`Broker`，屏蔽其差异。一般的通信方式为`REST/WebSocket`。举例当接收到`Broker`的`WebSocket Ticker`回调时，会使用事件引擎发布`Tick`事件。
+总之，`Broker`状态的变化，网关引擎可以通过发布事件的形式告知其他组件。
+
+### 算法引擎
+
+监听网关发布的`Tick/Trade`等事件。

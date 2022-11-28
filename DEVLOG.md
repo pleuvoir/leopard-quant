@@ -122,11 +122,10 @@ https://geektutu.com/post/hpg-sync-pool.html
 
 ## 对接OK KLINE
 
-//TODO
-重新抽象ws 获取不到kline回调  不能重复readMessage 
+
+掉通了，算法中似乎不需要K的回调，在看看别人的实现，今天也不知道为啥就收到消息了。网关引擎负责发布了事件。
 
 gjson一个根据路径获取json值的库，类似于jsonObject
-
 
 
 ## 	协程池 ants.Pool 限制回调异步任务的创建
@@ -136,4 +135,6 @@ gjson一个根据路径获取json值的库，类似于jsonObject
 
 
 ## toml 格式文件解析
+
+//TODO
 

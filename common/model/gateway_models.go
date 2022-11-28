@@ -18,6 +18,17 @@ type Ticker struct {
 	Ts        uint64  `json:"ts"`        //数据产生时间，Unix时间戳的毫秒数格式，如 1597026383085
 }
 
+type KLine struct {
+	Ts          uint64  `json:"ts"`          //开始时间，Unix时间戳的毫秒数格式，如 1597026383085
+	Open        float64 `json:"open"`        //开盘价格
+	Highest     float64 `json:"highest"`     //最高价格
+	Lowest      float64 `json:"lowest"`      //最低价格
+	Close       float64 `json:"close"`       //收盘价格
+	Vol         float64 `json:"vol"`         //交易量，以张为单位
+	VolCcy      float64 `json:"volCcy"`      //交易量，交易量，以币为单位
+	VolCcyQuote float64 `json:"volCcyQuote"` //交易量，交易量，以计价货币为单位
+}
+
 type Trade struct {
 	Id      string
 	OrderId string
@@ -29,7 +40,4 @@ type Order struct {
 
 func (o Order) IsActive() bool {
 	return false
-}
-
-type KLine struct {
 }

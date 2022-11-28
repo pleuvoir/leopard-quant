@@ -26,9 +26,12 @@ func (o *OKX) Subscribe(symbol string, c gateway.ApiCallback) error {
 		return err
 	}
 	marketApi.Subscribe(ArgItem{Channel: "tickers", InstId: symbol})
+	marketApi.Subscribe(ArgItem{Channel: "candle15m", InstId: symbol})
+	o.marketApi = marketApi
 	return nil
 }
 
 func (o *OKX) CancelSubscribe(symbol string) error {
-	panic("implement me")
+	o.marketApi.UnSubscribe(ArgItem{Channel: "tickers", InstId: symbol})
+	return nil
 }
