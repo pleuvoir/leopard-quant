@@ -81,7 +81,7 @@ func (q *eventQueue) send(e Event) {
 }
 
 func newEventQueue(t Type) *eventQueue {
-	pool, _ := ants.NewPool(28) //可以控制有多少协程并发处理任务，因为任务是异步的，因此这个管道大小也无意义
+	pool, _ := ants.NewPool(100) //可以控制有多少协程并发处理任务
 	return &eventQueue{ch: make(chan Event), t: t, pool: pool}
 }
 

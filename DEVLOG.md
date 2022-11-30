@@ -136,5 +136,13 @@ gjson一个根据路径获取json值的库，类似于jsonObject
 
 ## toml 格式文件解析
 
-//TODO
+已解析，交易所配置改为toml文件
 
+
+## 引入 go-taLib
+
+目前还没使用
+
+
+
+https://www.quantstart.com/articles/
