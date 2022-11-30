@@ -1,11 +1,13 @@
 package engine
 
 import (
+	"github.com/BurntSushi/toml"
 	"github.com/gookit/color"
 	"github.com/pkg/errors"
 	"leopard-quant/core/config"
 	"leopard-quant/core/event"
-	"leopard-quant/gateway/okx"
+	"leopard-quant/gateway"
+	"leopard-quant/gateway/factory"
 	"sync"
 	"time"
 )
@@ -46,8 +48,19 @@ func (m *MainEngine) InitEngines() {
 
 // 加载网关引擎
 func (m *MainEngine) loadGateway() {
-	//TODO 这里应该将每个交易所分开
-	m.AddGateway(NewGateway("okx", m.eventEngine, okx.New(m.gatewayConfig.ConfigPath)))
+	c := make(map[string]*gateway.ApiOptions)
+	_, err := toml.DecodeFile(m.gatewayConfig.ConfigPath, &c)
+	if err != nil {
+		color.Redln("读取网关配置文件toml失败，%s", err)
+		panic(err)
+	}
+	if len(c) == 0 {
+		panic("未加载任何网关")
+	}
+	for name, options := range c {
+		m.AddGateway(NewGateway(m.eventEngine, factory.NewGateway(name, options)))
+	}
+
 }
 
 // RegisterListener 注册事件

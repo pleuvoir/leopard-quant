@@ -5,6 +5,7 @@ import (
 	"github.com/tidwall/gjson"
 	"leopard-quant/common/model"
 	"leopard-quant/gateway"
+	"leopard-quant/gateway/okx"
 	"strconv"
 	"testing"
 )
@@ -23,7 +24,7 @@ func TestWs(t *testing.T) {
 		//TickerCallbackConverter: convert2Ticker,
 	}
 
-	b := gateway.New(cfg, callback)
+	b := okx.New(cfg, callback)
 
 	if err := b.Start(); err != nil {
 		panic(err)

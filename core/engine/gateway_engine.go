@@ -13,11 +13,11 @@ type GatewayEngine struct {
 	GatewayName string
 	EventEngine *event.Engine
 	eventPool   sync.Pool //对象池避免创建过多对象
-	sub         GatewaySub
+	sub         gateway.Sub
 }
 
-func NewGateway(GatewayName string, eventEngine *event.Engine, sub GatewaySub) *GatewayEngine {
-	return &GatewayEngine{GatewayName: GatewayName, EventEngine: eventEngine,
+func NewGateway(eventEngine *event.Engine, sub gateway.Sub) *GatewayEngine {
+	return &GatewayEngine{GatewayName: sub.Name(), EventEngine: eventEngine,
 		eventPool: sync.Pool{New: func() any {
 			return *new(event.Event)
 		}},
@@ -75,9 +75,4 @@ func (g *GatewayEngine) Subscribe(symbol string) error {
 // CancelSubscribe 取消订阅某币种的所有事件
 func (g *GatewayEngine) CancelSubscribe(symbol string) error {
 	return g.sub.CancelSubscribe(symbol)
-}
-
-type GatewaySub interface {
-	Subscribe(symbol string, c gateway.ApiCallback) error
-	CancelSubscribe(symbol string) error
 }

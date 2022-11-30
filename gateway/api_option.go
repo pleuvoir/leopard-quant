@@ -8,12 +8,12 @@ import (
 )
 
 type ApiOptions struct {
-	Addr          string `yaml:"addr"`
-	Proxy         string `yaml:"proxy"`
-	ApiKey        string `yaml:"api-key"`
-	SecretKey     string `yaml:"secret-key"`
-	AutoReconnect bool   `yaml:"auto-reconnect"`
-	DebugMode     bool   `yaml:"debug-mode"`
+	Addr          string `toml:"addr"`
+	Proxy         string `toml:"proxy"`
+	ApiKey        string `toml:"api-key"`
+	SecretKey     string `toml:"secret-key"`
+	AutoReconnect bool   `toml:"auto-reconnect"`
+	DebugMode     bool   `toml:"debug-mode"`
 }
 
 type apiOptions = func(o *ApiOptions)

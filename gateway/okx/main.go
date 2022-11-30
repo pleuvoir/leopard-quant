@@ -7,9 +7,9 @@ type OKX struct {
 	marketApi *MarketApi
 }
 
-func New(configPath string) *OKX {
+func New(options *gateway.ApiOptions) *OKX {
 	okx := &OKX{}
-	baseApi := gateway.NewBaseApi(gateway.WithConfig(configPath))
+	baseApi := gateway.NewBaseApiWithOptions(options)
 	baseApi.WithUnmarshalerOption(
 		gateway.WithGetTickerResponseUnmarshaler(GetTickerResponseUnmarshaler),
 		gateway.WithGetKlineResponseUnmarshaler(GetKlineResponseUnmarshaler),
@@ -34,4 +34,8 @@ func (o *OKX) Subscribe(symbol string, c gateway.ApiCallback) error {
 func (o *OKX) CancelSubscribe(symbol string) error {
 	o.marketApi.UnSubscribe(ArgItem{Channel: "tickers", InstId: symbol})
 	return nil
+}
+
+func (o *OKX) Name() string {
+	return "okx"
 }

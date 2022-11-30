@@ -17,4 +17,4 @@ algo:
 
 main:
   gateway:
-    configPath: '/Users/pleuvoir/dev/space/git/leopard-quant/build/gateway.yml'
+    configPath: '/Users/pleuvoir/dev/space/git/leopard-quant/build/gateway.toml'
