@@ -153,3 +153,8 @@ https://www.quantstart.com/articles/
 同一个币种多模板只需要订阅一次，
 Ws Read error
 目前ws不会自动重连 有问题 因此会显示订阅成功但是收不到回调
+
+加密货币行情订阅组件 python
+https://zhuanlan.zhihu.com/p/97360644
+
+
