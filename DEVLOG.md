@@ -146,3 +146,10 @@ gjson一个根据路径获取json值的库，类似于jsonObject
 
 
 https://www.quantstart.com/articles/
+
+
+## 优化算法引擎订阅
+
+同一个币种多模板只需要订阅一次，
+Ws Read error
+目前ws不会自动重连 有问题 因此会显示订阅成功但是收不到回调

@@ -3,6 +3,7 @@ package base
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gookit/color"
 	"github.com/pkg/errors"
 	. "leopard-quant/common/model"
 	"leopard-quant/core/config"
@@ -155,6 +156,7 @@ func (s *AlgoEngine) orderHandler() func(e event.Event) {
 	}
 }
 
+// Subscribe 订阅币种，当前币种下的所有模板会收到回调 可参考registerEvent
 func (s *AlgoEngine) Subscribe(subName string, symbol string) error {
 	if !Exist(subName) {
 		return errors.Errorf("不存在的模板[%s]", subName)
@@ -163,9 +165,21 @@ func (s *AlgoEngine) Subscribe(subName string, symbol string) error {
 		return errors.Errorf("订阅symbol不能为空")
 	}
 	//TODO 检查支持该币种
+
+	//多个模板只需要订阅一次
 	templates := s.symbolAlgoTemplateMap[symbol]
+	if len(templates) == 0 {
+		if err := s.mainEngine.Subscribe(DefaultGatewayName, symbol); err != nil {
+			color.Errorln(fmt.Sprintf("币种%s订阅失败。%s", symbol, err))
+			return err
+		}
+		color.Infoln(fmt.Sprintf("币种%s已订阅成功。", symbol))
+	} else {
+		color.Warnln(fmt.Sprintf("当前币种%s已订阅过，跳过。", symbol))
+	}
+
 	algoTemplates := append(templates, subName)
 	s.symbolAlgoTemplateMap[symbol] = algoTemplates
 
-	return s.mainEngine.Subscribe(DefaultGatewayName, symbol)
+	return nil
 }

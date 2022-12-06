@@ -32,9 +32,8 @@ func (n *Noop2Sub) OnTrade(c Context, trade model.Trade) {
 }
 
 func (n *Noop2Sub) OnTick(c Context, t model.Ticker) {
-	log.Infof("NoopSub OnTick，%+v", t)
+	log.Infof("NoopSub2 OnTick，%+v", t)
 	time.Sleep(time.Second * 5)
-
 }
 
 func (n *Noop2Sub) OnOrder(c Context, order model.Order) {
