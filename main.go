@@ -19,8 +19,6 @@ func openBrowser(serv *restful.Server) {
 }
 
 func main() {
-
 	bootstrap.Init()
-
 	restful.NewServer().ServerStartedListener(nil).Start()
 }

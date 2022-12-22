@@ -1,10 +1,10 @@
 {
   "noop":{
-    "enable":true,
+    "enable":false,
     "symbol":"STARL-USDT"
   },
   "noop2":{
-    "enable":true,
+    "enable":false,
     "symbol":"STARL-USDT"
   }
 }

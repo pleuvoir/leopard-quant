@@ -1,0 +1,13 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+option go_package = ".;pb";
+
+
+message UpdateCountRequest {
+  int64 count = 1;
+}
+
+
+service PushService {
+  rpc UpdateCount(UpdateCountRequest) returns(google.protobuf.Empty);
+}
