@@ -5,7 +5,7 @@ import (
 	socketIO "github.com/ambelovsky/gosf-socketio"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"leopard-quant/common/model"
-	"leopard-quant/rpc/pb"
+	"leopard-quant/rpc/proto"
 )
 
 type PushService struct {
@@ -20,7 +20,7 @@ func (p PushService) push(method string, data any) {
 	p.sio.BroadcastToAll("push", model.NewSuccess(method, data))
 }
 
-func (p PushService) UpdateCount(ctx context.Context, request *pb.UpdateCountRequest) (*emptypb.Empty, error) {
+func (p PushService) UpdateCount(ctx context.Context, request *proto.UpdateCountRequest) (*emptypb.Empty, error) {
 	p.push("UpdateCount", request)
 	return &emptypb.Empty{}, nil
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
-option go_package = ".;pb";
+option go_package = ".;proto";
 
 
 message UpdateCountRequest {

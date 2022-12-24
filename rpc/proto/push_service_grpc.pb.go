@@ -4,7 +4,7 @@
 // - protoc             v3.15.8
 // source: push_service.proto
 
-package pb
+package proto
 
 import (
 	context "context"
