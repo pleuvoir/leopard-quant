@@ -18,86 +18,120 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// HelloClient is the client API for Hello service.
+// AgentClient is the client API for Agent service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type HelloClient interface {
-	// 定义SayHello方法
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+type AgentClient interface {
+	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*RpcResult, error)
+	UnSubscribe(ctx context.Context, in *UnSubscribeRequest, opts ...grpc.CallOption) (*RpcResult, error)
 }
 
-type helloClient struct {
+type agentClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewHelloClient(cc grpc.ClientConnInterface) HelloClient {
-	return &helloClient{cc}
+func NewAgentClient(cc grpc.ClientConnInterface) AgentClient {
+	return &agentClient{cc}
 }
 
-func (c *helloClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/services.Hello/SayHello", in, out, opts...)
+func (c *agentClient) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (*RpcResult, error) {
+	out := new(RpcResult)
+	err := c.cc.Invoke(ctx, "/services.Agent/Subscribe", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// HelloServer is the server API for Hello service.
-// All implementations should embed UnimplementedHelloServer
+func (c *agentClient) UnSubscribe(ctx context.Context, in *UnSubscribeRequest, opts ...grpc.CallOption) (*RpcResult, error) {
+	out := new(RpcResult)
+	err := c.cc.Invoke(ctx, "/services.Agent/UnSubscribe", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AgentServer is the server API for Agent service.
+// All implementations should embed UnimplementedAgentServer
 // for forward compatibility
-type HelloServer interface {
-	// 定义SayHello方法
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+type AgentServer interface {
+	Subscribe(context.Context, *SubscribeRequest) (*RpcResult, error)
+	UnSubscribe(context.Context, *UnSubscribeRequest) (*RpcResult, error)
 }
 
-// UnimplementedHelloServer should be embedded to have forward compatible implementations.
-type UnimplementedHelloServer struct {
+// UnimplementedAgentServer should be embedded to have forward compatible implementations.
+type UnimplementedAgentServer struct {
 }
 
-func (UnimplementedHelloServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+func (UnimplementedAgentServer) Subscribe(context.Context, *SubscribeRequest) (*RpcResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
+}
+func (UnimplementedAgentServer) UnSubscribe(context.Context, *UnSubscribeRequest) (*RpcResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnSubscribe not implemented")
 }
 
-// UnsafeHelloServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to HelloServer will
+// UnsafeAgentServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AgentServer will
 // result in compilation errors.
-type UnsafeHelloServer interface {
-	mustEmbedUnimplementedHelloServer()
+type UnsafeAgentServer interface {
+	mustEmbedUnimplementedAgentServer()
 }
 
-func RegisterHelloServer(s grpc.ServiceRegistrar, srv HelloServer) {
-	s.RegisterService(&Hello_ServiceDesc, srv)
+func RegisterAgentServer(s grpc.ServiceRegistrar, srv AgentServer) {
+	s.RegisterService(&Agent_ServiceDesc, srv)
 }
 
-func _Hello_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+func _Agent_Subscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubscribeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HelloServer).SayHello(ctx, in)
+		return srv.(AgentServer).Subscribe(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/services.Hello/SayHello",
+		FullMethod: "/services.Agent/Subscribe",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HelloServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(AgentServer).Subscribe(ctx, req.(*SubscribeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Hello_ServiceDesc is the grpc.ServiceDesc for Hello service.
+func _Agent_UnSubscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnSubscribeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AgentServer).UnSubscribe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.Agent/UnSubscribe",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AgentServer).UnSubscribe(ctx, req.(*UnSubscribeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Agent_ServiceDesc is the grpc.ServiceDesc for Agent service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Hello_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "services.Hello",
-	HandlerType: (*HelloServer)(nil),
+var Agent_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "services.Agent",
+	HandlerType: (*AgentServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _Hello_SayHello_Handler,
+			MethodName: "Subscribe",
+			Handler:    _Agent_Subscribe_Handler,
+		},
+		{
+			MethodName: "UnSubscribe",
+			Handler:    _Agent_UnSubscribe_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

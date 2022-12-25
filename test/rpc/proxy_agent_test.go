@@ -17,13 +17,18 @@ func TestHello(t *testing.T) {
 		return
 	}
 
-	client := proto.NewHelloClient(conn)
+	client := proto.NewAgentClient(conn)
 
-	rsp, err := client.SayHello(context.Background(), &proto.HelloRequest{Name: "pleuvoir"})
+	subscribeRequest := &proto.SubscribeRequest{
+		Symbol:   "BTC-USDT",
+		Type:     "kline",
+		Exchange: "okx",
+	}
+	rsp, err := client.Subscribe(context.Background(), subscribeRequest)
 
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		return
 	}
-	fmt.Println(rsp.Message)
+	fmt.Println(rsp)
 }
